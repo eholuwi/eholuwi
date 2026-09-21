@@ -50,7 +50,7 @@ Hoje atuo com análise de sistemas, compras e indicadores (SCM), onde aprendi a 
 
 ## Onde me encontrar
 
-- LinkedIn: _cole seu link aqui_
+- LinkedIn: _https://www.linkedin.com/in/luisgabrielarrudadeoliveira/_
 - Localização: Manaus, Amazonas, Brasil
 
 ---

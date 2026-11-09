@@ -20,6 +20,8 @@
   --bal: #a5b4fc;
   --focus: #60a5fa;
   --warn: #fbbf24;
+  --ok: #4ade80;
+  --crit: #f87171;
   --font-display: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color-scheme: dark;
@@ -104,6 +106,59 @@ table.tx td.r, table.tx th.r { text-align: right; }
 .empty { padding: 40px 16px; text-align: center; color: var(--ink-3); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs button { background: transparent; border: 0; border-bottom: 2px solid transparent; color: var(--ink-2); font-family: inherit; font-size: 14.5px; font-weight: 600; padding: 10px 14px; cursor: pointer; margin-bottom: -1px; min-height: 44px; }
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--rev); }
+.st { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; border: 1px solid transparent; white-space: nowrap; }
+.st-ok { color: var(--ok); background: rgba(74, 222, 128, .12); border-color: rgba(74, 222, 128, .3); }
+.st-warn { color: var(--warn); background: rgba(251, 191, 36, .12); border-color: rgba(251, 191, 36, .32); }
+.st-crit { color: var(--crit); background: rgba(248, 113, 113, .13); border-color: rgba(248, 113, 113, .34); }
+.hero { display: grid; gap: 20px; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: stretch; }
+@media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.hero h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 3vw, 30px); line-height: 1.2; letter-spacing: -0.015em; margin: 12px 0 10px; text-wrap: balance; }
+.hero ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; color: var(--ink-2); font-size: 14.5px; }
+.hero li { display: flex; gap: 8px; align-items: baseline; }
+.stat-stack { display: grid; gap: 10px; align-content: start; }
+.stat { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.stat .l { color: var(--ink-3); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.stat .v { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin-top: 2px; overflow-wrap: anywhere; }
+.stat .n { color: var(--ink-3); font-size: 12.5px; margin-top: 2px; }
+.ind-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.ind { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ind .t { color: var(--ink-2); font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ind .v { font-family: var(--font-display); font-weight: 700; font-size: 22px; overflow-wrap: anywhere; }
+.ind .d { color: var(--ink-3); font-size: 13px; }
+.actions { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.action { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: start; padding: 14px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }
+@media (max-width: 560px) { .action { grid-template-columns: minmax(0, 1fr); } }
+.action h3 { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+.action p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.impact { text-align: right; min-width: 110px; }
+.impact b { display: block; font-family: var(--font-display); font-size: 18px; color: var(--ink); }
+.impact span { color: var(--ink-3); font-size: 12px; }
+@media (max-width: 560px) { .impact { text-align: left; } }
+.hrow { display: grid; grid-template-columns: minmax(90px, 170px) minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 6px 0; font-size: 14px; }
+.hrow .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+.hrow .tr { height: 10px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.hrow .fl { height: 100%; border-radius: 999px; }
+.hrow .vl { color: var(--ink); text-align: right; min-width: 92px; }
+.mini { min-height: 32px !important; padding: 4px 28px 4px 8px !important; font-size: 13px !important; width: auto !important; border-radius: 8px !important; }
+.small-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 460px; }
+.small-table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.small-table td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+.small-table tr:last-child td { border-bottom: 0; }
+.small-table .r { text-align: right; }
+.scroll-x { overflow-x: auto; }
+.cap { color: var(--ink-3); font-size: 12.5px; }
+.note-list { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
+.bud-row { display: grid; grid-template-columns: minmax(100px, 150px) minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line-soft); font-size: 14px; }
+.bud-row:last-child { border-bottom: 0; }
+.bud-row .meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bud-row .lim { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.bud-row input { width: 96px !important; text-align: right; }
+@media (max-width: 640px) { .bud-row, .hrow { grid-template-columns: minmax(0, 1fr) auto; } .bud-row .bar, .hrow .tr { grid-column: 1 / -1; order: 3; } }
+.tag { font-size: 11.5px; padding: 1px 7px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-3); }
 </style>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
@@ -558,6 +613,397 @@ function Kpi({ color, label, value, children }) {
   </div>`;
 }
 
+/* ---------- Inteligência de decisão ---------- */
+const PREFS_KEY = 'painel-financeiro-prefs-v1';
+const STATUS = {
+  ok: { label: 'Ok', icon: '✓', cls: 'st-ok' },
+  warn: { label: 'Atenção', icon: '!', cls: 'st-warn' },
+  crit: { label: 'Crítico', icon: '✕', cls: 'st-crit' },
+};
+const PERSON_CATS = ['Pix e transferências', 'Pix recebido', 'Viagens e família'];
+const NOT_CONTROLLABLE = ['Pix e transferências', 'Viagens e família', 'Outros', 'Juros e multas', 'Impostos e taxas', 'Pix recebido'];
+const TABS = [['visao', 'Visão geral'], ['fluxo', 'Fluxo e destinos'], ['lancamentos', 'Lançamentos'], ['dados', 'Dados e confiança']];
+const sum = (a, f) => a.reduce((s, x) => s + f(x), 0);
+const daysIn = (y, m) => new Date(y, m, 0).getDate();
+const okey = (t) => t.type + '::' + norm(t.who || t.desc);
+const monthName = (key) => MESES[+key.slice(5, 7) - 1] + ' de ' + key.slice(0, 4);
+
+function applyOverrides(txs, ov) {
+  const list = [];
+  txs.forEach((t) => {
+    const k = okey(t);
+    const o = ov[k];
+    const base = { ...t, who: t.who || t.desc, ok: k, origType: t.type };
+    if (!o) list.push(base);
+    else if (o !== 'Ignorar') list.push({ ...base, type: o, value: Math.abs(t.value), over: true });
+  });
+  return list;
+}
+function monthlyStats(list) {
+  const m = {};
+  list.forEach((t) => {
+    const k = t.date.slice(0, 7);
+    const s = m[k] || (m[k] = { key: k, receita: 0, despesa: 0, invest: 0, cats: {} });
+    if (t.type === 'Receita') s.receita += t.value;
+    else if (t.type === 'Despesa') { s.despesa += t.value; s.cats[t.cat] = (s.cats[t.cat] || 0) + t.value; }
+    else s.invest += t.value;
+  });
+  return Object.values(m).sort((a, b) => (a.key < b.key ? -1 : 1)).map((s) => ({ ...s, net: s.receita - s.despesa }));
+}
+function peopleFlows(list) {
+  const g = {};
+  list.forEach((t) => {
+    if (!PERSON_CATS.includes(t.cat) || t.who === 'Pix sem identificação') return;
+    const k = norm(t.who);
+    const p = g[k] || (g[k] = { who: t.who, rec: 0, env: 0, n: 0 });
+    if (t.type === 'Receita') p.rec += t.value; else if (t.type === 'Despesa') p.env += t.value;
+    p.n++;
+  });
+  return Object.values(g).map((p) => ({ ...p, liq: p.rec - p.env })).sort((a, b) => b.rec + b.env - (a.rec + a.env));
+}
+function destinations(list) {
+  const g = {};
+  list.forEach((t) => {
+    if (t.type !== 'Despesa' || t.value <= 0) return;
+    const k = norm(t.who);
+    const d = g[k] || (g[k] = { who: t.who, total: 0, n: 0, cat: t.cat });
+    d.total += t.value; d.n++;
+  });
+  return Object.values(g).sort((a, b) => b.total - a.total);
+}
+function recurring(list) {
+  const g = {};
+  list.forEach((t) => {
+    if (t.type !== 'Despesa' || t.value <= 0 || PERSON_CATS.includes(t.cat) || t.cat === 'Outros') return;
+    const k = norm(t.who);
+    const r = g[k] || (g[k] = { who: t.who, cat: t.cat, total: 0, months: new Set(), last: '' });
+    r.total += t.value; r.months.add(t.date.slice(0, 7));
+    if (t.date > r.last) r.last = t.date;
+  });
+  return Object.values(g).filter((r) => r.months.size >= 3)
+    .map((r) => ({ who: r.who, cat: r.cat, months: r.months.size, monthly: r.total / r.months.size, last: r.last }))
+    .sort((a, b) => b.monthly - a.monthly);
+}
+
+function computeInsights(eff, period, snapshot, kpi) {
+  if (!eff.length) return null;
+  const months = monthlyStats(eff);
+  const asOf = eff.reduce((m, t) => (t.date > m ? t.date : m), eff[0].date);
+  const [ay, am, ad] = asOf.split('-').map(Number);
+  const dim = daysIn(ay, am);
+  const partial = ad < dim;
+  const cur = months[months.length - 1];
+  const full = partial ? months.slice(0, -1) : months;
+  const base = full.slice(-3);
+  const avg = (arr, f) => (arr.length ? sum(arr, f) / arr.length : 0);
+  const baseR = avg(base, (m) => m.receita);
+  const baseD = avg(base, (m) => m.despesa);
+  const out = { months, asOf, ad, dim, partial, cur, base, baseR, baseD };
+
+  if (partial && base.length) {
+    const rest = dim - ad;
+    const rec = Math.max(cur.receita, baseR);
+    const desp = cur.despesa + (baseD / 30) * rest;
+    out.proj = { rec, desp, net: rec - desp, rest, safeDaily: rest > 0 ? Math.max(0, (rec - cur.despesa) / rest) : 0, left: rec - cur.despesa, paceDaily: cur.despesa / Math.max(ad, 1), baseDaily: baseD / 30 };
+  }
+
+  const accs = snapshot ? snapshot.accounts : [];
+  out.hasSnap = !!snapshot;
+  out.cash = sum(accs.filter((a) => a.kind === 'BANK'), (a) => a.balance);
+  out.debt = sum(accs.filter((a) => a.kind === 'CREDIT'), (a) => a.used);
+  out.position = out.cash - out.debt;
+  out.runway = snapshot && baseD > 0 ? out.cash / (baseD / 30) : null;
+  out.cards = accs.filter((a) => a.kind === 'CREDIT' && a.limit > 0).map((a) => ({ ...a, pct: (a.used / a.limit) * 100 }));
+  out.maxUse = out.cards.length ? Math.max(...out.cards.map((c) => c.pct)) : null;
+  out.topCard = out.cards.length ? out.cards.reduce((a, b) => (b.pct > a.pct ? b : a)) : null;
+
+  const dates = period.map((t) => t.date).sort();
+  const spanDays = dates.length ? (new Date(dates[dates.length - 1]) - new Date(dates[0])) / 864e5 + 1 : 1;
+  const mSpan = Math.max(1, spanDays / 30.4);
+  out.mSpan = mSpan;
+  out.first = dates[0]; out.lastD = dates[dates.length - 1];
+  const cats = {};
+  period.forEach((t) => { if (t.type === 'Despesa') cats[t.cat] = (cats[t.cat] || 0) + t.value; });
+  out.cats = cats;
+  const juros = (cats['Juros e multas'] || 0) + (cats['Impostos e taxas'] || 0);
+  const rec = kpi.receita;
+
+  const pm = monthlyStats(period).filter((m) => !(partial && m.key === cur.key));
+  const red = pm.filter((m) => m.net < 0).length;
+  const avgNet = pm.length ? sum(pm, (m) => m.net) / pm.length : 0;
+
+  const ind = [];
+  ind.push({ key: 'res', title: 'Resultado do período', value: brl.format(kpi.saldo), level: kpi.saldo >= 0 ? 'ok' : rec > 0 && kpi.saldo > -0.1 * rec ? 'warn' : 'crit',
+    note: kpi.saldo >= 0 ? 'Você gastou menos do que ganhou.' : (rec > 0 ? `Você gastou ${fmtPct((-kpi.saldo / rec) * 100)} a mais do que ganhou.` : 'Há despesas sem receita no período.') });
+  ind.push({ key: 'poup', title: 'Taxa de poupança', value: fmtPct(kpi.taxa), level: kpi.taxa >= 10 ? 'ok' : kpi.taxa >= 3 ? 'warn' : 'crit', note: 'Investimentos sobre a receita. Referência comum: guardar de 10% a 20%.' });
+  if (pm.length >= 2) ind.push({ key: 'verm', title: 'Meses no vermelho', value: `${red} de ${pm.length}`, level: red === 0 ? 'ok' : red / pm.length <= 1 / 3 ? 'warn' : 'crit', note: 'Meses completos em que a despesa passou da receita.' });
+  ind.push({ key: 'juros', title: 'Juros, multas e IOF', value: brl.format(juros), level: juros === 0 ? 'ok' : juros > 0.02 * Math.max(rec, 1) ? 'crit' : 'warn', note: 'Dinheiro que sai sem comprar nada e dá para evitar.' });
+  if (out.maxUse != null) ind.push({ key: 'lim', title: 'Uso do limite do cartão', value: fmtPct(out.maxUse), level: out.maxUse >= 80 ? 'crit' : out.maxUse >= 50 ? 'warn' : 'ok', note: `Mais usado: ${out.topCard.short || out.topCard.label}.` });
+  if (out.runway != null) ind.push({ key: 'fol', title: 'Fôlego de caixa', value: out.runway < 1 ? 'menos de 1 dia' : `${Math.floor(out.runway)} ${Math.floor(out.runway) === 1 ? 'dia' : 'dias'}`, level: out.runway < 7 ? 'crit' : out.runway < 30 ? 'warn' : 'ok', note: 'Quanto tempo o saldo disponível cobre no seu ritmo de gastos. Ideal: 90 dias ou mais.' });
+  const vague = (cats['Pix e transferências'] || 0) + (cats['Outros'] || 0);
+  const vshare = kpi.despesa > 0 ? (vague / kpi.despesa) * 100 : 0;
+  ind.push({ key: 'vis', title: 'Gastos sem categoria clara', value: fmtPct(vshare), level: vshare > 50 ? 'crit' : vshare > 30 ? 'warn' : 'ok', note: 'Pix e transferências viram uma caixa-preta. Reclassifique na aba Lançamentos.' });
+  out.ind = ind;
+  const nc = ind.filter((i) => i.level === 'crit').length, nw = ind.filter((i) => i.level === 'warn').length;
+  out.level = nc >= 2 ? 'crit' : nc === 1 || nw >= 2 ? 'warn' : 'ok';
+
+  const actions = [];
+  out.cards.filter((c) => c.pct >= 80).forEach((c) => actions.push({ level: 'crit', title: `Segure o cartão ${c.short || c.label}`,
+    detail: `${fmtPct(c.pct)} do limite já usado (${brl.format(c.used)} de ${brl.format(c.limit)}).` + (c.due ? ` O banco informa vencimento em ${fmtDate(c.due)}; confira se a fatura está paga.` : '') }));
+  if (avgNet < 0) actions.push({ level: 'crit', title: 'Feche o buraco mensal', detail: `Em média, você gasta ${brl.format(-avgNet)} a mais do que ganha por mês. Esse é o corte (ou a renda extra) necessário para zerar.`, impact: -avgNet, impactLabel: 'por mês para zerar' });
+  if (juros > 0) actions.push({ level: 'warn', title: 'Pare de pagar juros e multas', detail: `${brl.format(juros)} saíram em juros, multas e IOF no período. Pague a fatura e o cheque especial antes do vencimento.`, impact: juros / mSpan, impactLabel: 'por mês evitável' });
+  Object.entries(cats).filter(([c, v]) => !NOT_CONTROLLABLE.includes(c) && v > 0).sort((a, b) => b[1] - a[1]).slice(0, 2).forEach(([c, v]) => {
+    const monthly = v / mSpan;
+    actions.push({ level: 'warn', title: `Reduza ${c.toLowerCase()}`, detail: `${brl.format(v)} no período (cerca de ${brl.format(monthly)} por mês). Cortar 20% é uma meta realista.`, impact: monthly * 0.2, impactLabel: 'por mês com −20%' });
+  });
+  const ppl = peopleFlows(period).filter((p) => p.liq < -200).sort((a, b) => a.liq - b.liq)[0];
+  if (ppl) actions.push({ level: 'warn', title: `Fluxo líquido com ${ppl.who}`, detail: `Você enviou ${brl.format(ppl.env)} e recebeu ${brl.format(ppl.rec)}, saldo de ${brl.format(ppl.liq)}. Combine um limite ou, se for conta sua, marque como "Ignorar" na aba Lançamentos.` });
+  const rc = recurring(eff);
+  if (rc.length) actions.push({ level: 'warn', title: 'Revise gastos recorrentes', detail: `${rc.length} cobranças repetidas somam cerca de ${brl.format(sum(rc, (r) => r.monthly))} por mês. Cancelar o que você não usa dá folga direta.` });
+  if (out.runway != null && out.runway < 30) actions.push({ level: 'warn', title: 'Monte um colchão de 1 mês', detail: `Hoje o disponível é ${brl.format(out.cash)}, e um mês de gastos custa cerca de ${brl.format(baseD)}. Quando o resultado ficar positivo, separe ${brl.format(Math.max(50, baseR * 0.05))} por mês (5% da receita) até chegar lá.` });
+  if (kpi.saldo > 0 && kpi.taxa < 10) actions.push({ level: 'ok', title: 'Transforme a sobra em reserva', detail: `Sobraram ${brl.format(kpi.saldo)}. Invista ao menos 10% da receita (${brl.format(0.1 * rec)}).` });
+  const order = { crit: 0, warn: 1, ok: 2 };
+  actions.sort((a, b) => order[a.level] - order[b.level]);
+  out.actions = actions;
+
+  const catAvg = {};
+  base.forEach((m) => Object.entries(m.cats).forEach(([c, v]) => { catAvg[c] = (catAvg[c] || 0) + v / base.length; }));
+  out.budgetCats = Object.entries(catAvg).filter(([c, v]) => v > 0 && c !== 'Pix recebido').sort((a, b) => b[1] - a[1]).slice(0, 8).map(([c, v]) => ({ cat: c, suggested: Math.max(10, Math.round(v / 10) * 10) }));
+  out.avgNet = avgNet;
+  return out;
+}
+
+/* ---------- Componentes de decisão ---------- */
+function StatusPill({ level }) {
+  const s = STATUS[level];
+  return html`<span className=${'st ' + s.cls}><span aria-hidden="true">${s.icon}</span>${s.label}</span>`;
+}
+
+function Hero({ ins, kpi, rangeText }) {
+  const bullets = ins.ind.filter((i) => i.level !== 'ok').slice(0, 3);
+  const headline = kpi.saldo < 0
+    ? `Você gastou ${brl.format(-kpi.saldo)} a mais do que ganhou (${rangeText}).`
+    : `Você ganhou ${brl.format(kpi.saldo)} a mais do que gastou (${rangeText}).`;
+  const verdict = { ok: 'Situação saudável', warn: 'Situação de atenção', crit: 'Situação crítica' }[ins.level];
+  return html`<section className="card hero" aria-label="Veredito">
+    <div style=${{ minWidth: 0 }}>
+      <div className="flex flex-wrap items-center gap-3"><${StatusPill} level=${ins.level} /><span className="eyebrow">${verdict}</span></div>
+      <h2>${headline}</h2>
+      <ul>
+        ${bullets.length ? bullets.map((b) => html`<li key=${b.key}><span className=${'st ' + STATUS[b.level].cls} style=${{ padding: '0 8px', fontSize: '11.5px' }} aria-hidden="true">${STATUS[b.level].icon}</span><span><b style=${{ color: 'var(--ink)', fontWeight: 600 }}>${b.title}:</b> ${b.value}. ${b.note}</span></li>`)
+          : html`<li>Todos os indicadores estão dentro da faixa saudável.</li>`}
+      </ul>
+    </div>
+    ${ins.hasSnap ? html`<div className="stat-stack">
+      <div className="stat"><div className="l">Disponível hoje</div><div className="v num">${brl.format(ins.cash)}</div><div className="n">Soma das contas, em ${fmtDate(ins.asOf)}</div></div>
+      <div className="stat"><div className="l">Usado nos cartões</div><div className="v num">${brl.format(ins.debt)}</div><div className="n">Fatura aberta ou a pagar</div></div>
+      <div className="stat"><div className="l">Posição líquida</div><div className="v num">${brl.format(ins.position)}</div><div className="n">Disponível − cartões</div></div>
+    </div>` : html`<div className="stat-stack">
+      <div className="stat"><div className="l">Receita média por mês</div><div className="v num">${brl.format(ins.baseR)}</div><div className="n">Últimos meses completos</div></div>
+      <div className="stat"><div className="l">Despesa média por mês</div><div className="v num">${brl.format(ins.baseD)}</div><div className="n">Últimos meses completos</div></div>
+      <div className="stat"><div className="l">Conectar contas</div><div className="n" style=${{ fontSize: '13.5px' }}>Com a conexão bancária, o painel mostra saldo, cartões e fôlego de caixa.</div></div>
+    </div>`}
+  </section>`;
+}
+
+function Forecast({ ins }) {
+  const p = ins.proj;
+  if (!p) return html`<section className="card"><div className="card-title">Previsão do mês</div><p className="card-sub" style=${{ marginTop: '8px' }}>O último mês dos dados já está completo ou não há meses anteriores para estimar o ritmo.</p></section>`;
+  const lvl = p.net >= 0 ? 'ok' : 'crit';
+  return html`<section className="card" aria-label="Previsão do mês">
+    <div className="flex flex-wrap items-start justify-between gap-2">
+      <div><div className="card-title">Fechamento de ${monthName(ins.cur.key).split(' de ')[0].toLowerCase()}</div><div className="card-sub">Projeção no dia ${ins.ad} de ${ins.dim}</div></div>
+      <${StatusPill} level=${lvl} />
+    </div>
+    <div className="kpi-value num" style=${{ marginTop: '12px' }}>${brl.format(p.net)}</div>
+    <div className="card-sub">resultado estimado ao fim do mês</div>
+    <div className="small-table scroll-x" style=${{ marginTop: '12px', minWidth: 0 }}>
+      <div className="hrow" style=${{ gridTemplateColumns: '1fr auto' }}><span style=${{ color: 'var(--ink-2)' }}>Receita estimada</span><b className="num">${brl.format(p.rec)}</b></div>
+      <div className="hrow" style=${{ gridTemplateColumns: '1fr auto' }}><span style=${{ color: 'var(--ink-2)' }}>Despesa estimada</span><b className="num">${brl.format(p.desp)}</b></div>
+      <div className="hrow" style=${{ gridTemplateColumns: '1fr auto' }}><span style=${{ color: 'var(--ink-2)' }}>Já gasto até hoje</span><b className="num">${brl.format(ins.cur.despesa)}</b></div>
+    </div>
+    <div className=${'banner ' + (p.left > 0 ? 'ok' : 'err')} style=${{ marginTop: '12px' }}>
+      ${p.rest > 0 ? (p.left > 0
+        ? html`<span>Para fechar no zero, gaste no máximo <b>${brl.format(p.safeDaily)} por dia</b> nos próximos ${p.rest} dias. Seu ritmo até agora é de ${brl.format(p.paceDaily)} por dia.</span>`
+        : html`<span>Você já gastou mais do que a receita estimada do mês. Qualquer gasto novo aumenta o déficit.</span>`)
+        : html`<span>O mês terminou.</span>`}
+    </div>
+    <p className="cap" style=${{ marginTop: '10px' }}>Como calculo: receita estimada = maior valor entre o que já entrou e a média dos últimos ${ins.base.length} meses completos. Despesa estimada = o gasto até hoje + a média diária desses meses nos dias restantes.</p>
+  </section>`;
+}
+
+function Position({ ins, snapshot }) {
+  if (!snapshot) return html`<section className="card"><div className="card-title">Posição atual</div><p className="card-sub" style=${{ marginTop: '8px' }}>Sem contas conectadas. Os saldos aparecem aqui quando o painel estiver ligado aos seus bancos.</p></section>`;
+  return html`<section className="card" aria-label="Posição atual">
+    <div className="card-title">Posição atual</div>
+    <div className="card-sub">Foto das contas em ${fmtDate(snapshot.asOf)}</div>
+    <div className="scroll-x" style=${{ marginTop: '10px' }}>
+    <table className="small-table" style=${{ minWidth: 0 }}>
+      <thead><tr><th>Conta</th><th className="r">Saldo ou uso</th></tr></thead>
+      <tbody>
+        ${snapshot.accounts.map((a) => html`<tr key=${a.bank + a.label}>
+          <td><div>${a.bank}</div><div className="cap">${a.label}</div>
+            ${a.kind === 'CREDIT' ? html`<div className="bar-track" style=${{ marginTop: '6px', maxWidth: '220px' }} role="img" aria-label=${'Limite usado ' + fmtPct((a.used / a.limit) * 100)}><div className="bar-fill" style=${{ width: Math.min(100, (a.used / a.limit) * 100) + '%', background: a.used / a.limit >= 0.8 ? 'var(--crit)' : a.used / a.limit >= 0.5 ? 'var(--warn)' : 'var(--ok)' }}></div></div>` : null}</td>
+          <td className="r num">${a.kind === 'CREDIT' ? html`<div>${brl.format(a.used)}</div><div className="cap">de ${brl.format(a.limit)}</div>` : brl.format(a.balance)}</td>
+        </tr>`)}
+      </tbody>
+    </table></div>
+    <p className="cap" style=${{ marginTop: '10px' }}>Se algum "bolso" do Mercado Pago (como Emergência) guarda dinheiro fora do saldo, ele não aparece aqui.</p>
+  </section>`;
+}
+
+function Thermometer({ ins }) {
+  return html`<section className="card" aria-label="Termômetro financeiro">
+    <div className="card-title">Termômetro financeiro</div>
+    <div className="card-sub" style=${{ marginBottom: '14px' }}>Cada indicador tem um selo (✓ ok, ! atenção, ✕ crítico) e uma referência</div>
+    <div className="ind-grid">
+      ${ins.ind.map((i) => html`<div className="ind" key=${i.key}>
+        <div className="t"><span>${i.title}</span><${StatusPill} level=${i.level} /></div>
+        <div className="v num">${i.value}</div>
+        <div className="d">${i.note}</div>
+      </div>`)}
+    </div>
+  </section>`;
+}
+
+function Actions({ ins }) {
+  const impactTotal = sum(ins.actions.filter((a) => a.impact && a.impactLabel !== 'por mês para zerar'), (a) => a.impact);
+  return html`<section className="card" aria-label="O que fazer agora">
+    <div className="flex flex-wrap items-start justify-between gap-2" style=${{ marginBottom: '14px' }}>
+      <div><div className="card-title">O que fazer agora</div><div className="card-sub">Ordenado por urgência, com o impacto estimado em reais</div></div>
+      ${impactTotal > 0 ? html`<span className="pill pill-rev num">Potencial: ${brl.format(impactTotal)} por mês</span>` : null}
+    </div>
+    ${ins.actions.length ? html`<ol className="actions">
+      ${ins.actions.map((a, i) => html`<li className="action" key=${i}>
+        <${StatusPill} level=${a.level} />
+        <div style=${{ minWidth: 0 }}><h3>${a.title}</h3><p>${a.detail}</p></div>
+        ${a.impact ? html`<div className="impact"><b className="num">${brl.format(a.impact)}</b><span>${a.impactLabel}</span></div>` : html`<div></div>`}
+      </li>`)}
+    </ol>` : html`<div className="empty">Nenhuma ação urgente. Continue acompanhando o painel.</div>`}
+  </section>`;
+}
+
+function Budget({ ins, budgets, setBudgets }) {
+  const keys = ins.months.map((m) => m.key);
+  const [mk, setMk] = useState(keys[keys.length - 1]);
+  const month = ins.months.find((m) => m.key === mk) || ins.months[ins.months.length - 1];
+  const isCur = month.key === ins.cur.key && ins.partial;
+  const rows = ins.budgetCats.map((b) => {
+    const limit = budgets[b.cat] != null ? budgets[b.cat] : b.suggested;
+    const real = Math.max(0, month.cats[b.cat] || 0);
+    const proj = isCur ? (real / Math.max(ins.ad, 1)) * ins.dim : real;
+    const pct = limit > 0 ? (real / limit) * 100 : 0;
+    const level = pct >= 100 ? 'crit' : pct >= 80 || (isCur && proj > limit) ? 'warn' : 'ok';
+    return { ...b, limit, real, proj, pct, level };
+  });
+  const totLimit = sum(rows, (r) => r.limit), totReal = sum(rows, (r) => r.real);
+  const color = { ok: 'var(--ok)', warn: 'var(--warn)', crit: 'var(--crit)' };
+  const text = { ok: 'Dentro do limite', warn: 'Perto do limite', crit: 'Estourou' };
+  return html`<section className="card" aria-label="Orçamento do mês">
+    <div className="flex flex-wrap items-end justify-between gap-3" style=${{ marginBottom: '8px' }}>
+      <div><div className="card-title">Orçamento do mês</div><div className="card-sub">Os limites sugeridos vêm da média dos últimos meses. Edite os valores para definir os seus.</div></div>
+      <div className="flex flex-wrap items-end gap-2">
+        <div className="field"><label htmlFor="bud-month" className="sr-only">Mês do orçamento</label>
+          <select id="bud-month" className="input mini" value=${mk} onChange=${(e) => setMk(e.target.value)}>${keys.map((k) => html`<option key=${k} value=${k}>${monthName(k)}</option>`)}</select></div>
+        <button className="btn btn-quiet" style=${{ minHeight: '32px', padding: '4px 10px' }} onClick=${() => setBudgets({})}>Restaurar sugestões</button>
+      </div>
+    </div>
+    <div className="num" style=${{ color: 'var(--ink-2)', margin: '6px 0 10px' }}>Total: <b style=${{ color: 'var(--ink)' }}>${brl.format(totReal)}</b> de ${brl.format(totLimit)} (${fmtPct(totLimit > 0 ? (totReal / totLimit) * 100 : 0)})</div>
+    ${rows.map((r, i) => html`<div className="bud-row" key=${r.cat}>
+      <div className="meta"><span style=${{ color: 'var(--ink)', fontWeight: 600 }}>${r.cat}</span>
+        <span className="cap">${text[r.level]}${isCur && r.proj > r.limit && r.real <= r.limit ? ' · no ritmo atual passa do limite' : ''}</span></div>
+      <div className="hrow bar" style=${{ display: 'block', padding: 0 }}><div className="tr"><div className="fl" style=${{ width: Math.min(100, r.pct) + '%', background: color[r.level] }}></div></div></div>
+      <div className="lim num"><span>${brl.format(r.real)} /</span>
+        <label className="sr-only" htmlFor=${'bud-' + i}>Limite de ${r.cat}</label>
+        <input id=${'bud-' + i} className="input mini" type="number" min="0" step="10" inputMode="numeric" value=${r.limit}
+          onChange=${(e) => { const v = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)); setBudgets({ ...budgets, [r.cat]: v }); }} /></div>
+    </div>`)}
+  </section>`;
+}
+
+function Destinations({ list, totalDesp }) {
+  const top = destinations(list).slice(0, 8);
+  const max = top.length ? top[0].total : 1;
+  return html`<div className="card">
+    <div className="card-title">Para onde vai o dinheiro</div>
+    <div className="card-sub" style=${{ marginBottom: '10px' }}>Maiores destinos de despesa, por nome do estabelecimento ou pessoa</div>
+    ${top.length ? top.map((d) => html`<div className="hrow" key=${d.who} title=${d.who}>
+      <span className="nm">${d.who}</span>
+      <div className="tr"><div className="fl" style=${{ width: (d.total / max) * 100 + '%', background: 'var(--exp)' }}></div></div>
+      <span className="vl num"><b>${brl.format(d.total)}</b><span className="cap" style=${{ display: 'block' }}>${d.n}× · ${fmtPct(totalDesp > 0 ? (d.total / totalDesp) * 100 : 0)}</span></span>
+    </div>`) : html`<div className="empty">Sem despesas no período.</div>`}
+  </div>`;
+}
+
+function People({ list, onIgnore }) {
+  const rows = peopleFlows(list).slice(0, 8);
+  return html`<div className="card">
+    <div className="card-title">Pix com pessoas e empresas</div>
+    <div className="card-sub" style=${{ marginBottom: '10px' }}>Quanto entra e sai com cada pessoa. Se for conta sua ou dinheiro que só passa por você, use Ignorar.</div>
+    ${rows.length ? html`<div className="scroll-x"><table className="small-table">
+      <thead><tr><th>Pessoa</th><th className="r">Recebido</th><th className="r">Enviado</th><th className="r">Líquido</th><th></th></tr></thead>
+      <tbody>${rows.map((p) => html`<tr key=${p.who}>
+        <td style=${{ maxWidth: '200px', overflowWrap: 'anywhere' }}>${p.who}</td>
+        <td className="r num">${brl.format(p.rec)}</td><td className="r num">${brl.format(p.env)}</td>
+        <td className="r num"><b>${p.liq >= 0 ? '+ ' : '− '}${brl.format(Math.abs(p.liq))}</b></td>
+        <td className="r"><button className="btn btn-quiet" style=${{ minHeight: '30px', padding: '2px 10px', fontSize: '13px' }} onClick=${() => onIgnore(p.who)}>Ignorar</button></td>
+      </tr>`)}</tbody></table></div>` : html`<div className="empty">Nenhum Pix com pessoas no período.</div>`}
+  </div>`;
+}
+
+function Recurring({ list }) {
+  const rows = recurring(list);
+  const total = sum(rows, (r) => r.monthly);
+  return html`<div className="card">
+    <div className="flex flex-wrap items-start justify-between gap-2" style=${{ marginBottom: '10px' }}>
+      <div><div className="card-title">Gastos recorrentes</div><div className="card-sub">Cobranças que aparecem em 3 meses ou mais</div></div>
+      ${rows.length ? html`<span className="pill pill-exp num">≈ ${brl.format(total)} por mês</span>` : null}
+    </div>
+    ${rows.length ? html`<div className="scroll-x"><table className="small-table">
+      <thead><tr><th>Cobrança</th><th>Categoria</th><th className="r">Meses</th><th className="r">Média mensal</th></tr></thead>
+      <tbody>${rows.slice(0, 10).map((r) => html`<tr key=${r.who}><td>${r.who}</td><td style=${{ color: 'var(--ink-2)' }}>${r.cat}</td><td className="r num">${r.months}</td><td className="r num"><b>${brl.format(r.monthly)}</b></td></tr>`)}</tbody></table></div>` : html`<div className="empty">Nenhuma cobrança recorrente encontrada.</div>`}
+  </div>`;
+}
+
+function DataTab({ snapshot, embedded, eff, rules, rawCounts, undo, isBase }) {
+  const bySrc = {};
+  eff.forEach((t) => { const k = t.src || 'Planilha'; const s = bySrc[k] || (bySrc[k] = { n: 0, first: t.date, last: t.date }); s.n++; if (t.date < s.first) s.first = t.date; if (t.date > s.last) s.last = t.date; });
+  const pend = eff.filter((t) => t.pending).length;
+  return html`<div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+    <section className="card">
+      <div className="card-title">De onde vêm os números</div>
+      <div className="card-sub" style=${{ marginBottom: '10px' }}>Lançamentos usados em cada fonte</div>
+      <div className="scroll-x"><table className="small-table"><thead><tr><th>Fonte</th><th className="r">Lançamentos</th><th className="r">Período</th></tr></thead>
+        <tbody>${Object.entries(bySrc).map(([k, v]) => html`<tr key=${k}><td>${k}</td><td className="r num">${v.n}</td><td className="r num">${fmtDate(v.first)} a ${fmtDate(v.last)}</td></tr>`)}</tbody></table></div>
+      ${pend ? html`<p className="cap" style=${{ marginTop: '10px' }}>${pend} lançamentos estão pendentes (ainda não confirmados pelo banco) e podem mudar.</p>` : null}
+    </section>
+    <section className="card">
+      <div className="card-title">O que eu deixei de fora, e por quê</div>
+      <div className="card-sub" style=${{ marginBottom: '10px' }}>Movimentos que não são receita nem despesa de verdade. Contar esses valores duplicaria os totais.</div>
+      ${isBase && embedded && embedded.excluded ? html`<ul className="note-list">${embedded.excluded.map((e) => html`<li key=${e.label}><b style=${{ color: 'var(--ink)' }}>${e.label} (${e.count}):</b> ${e.why}</li>`)}</ul>` : html`<p className="card-sub">Os dados atuais vêm de uma planilha. Cada linha foi lida como está, sem exclusões automáticas.</p>`}
+    </section>
+    <section className="card">
+      <div className="card-title">Suas regras de classificação</div>
+      <div className="card-sub" style=${{ marginBottom: '10px' }}>Criadas na aba Lançamentos ou em "Pix com pessoas". Valem para todos os lançamentos do mesmo nome.</div>
+      ${rules.length ? html`<div className="scroll-x"><table className="small-table"><thead><tr><th>Lançamentos de</th><th>Tratar como</th><th className="r">Itens</th><th></th></tr></thead>
+        <tbody>${rules.map((r) => html`<tr key=${r.key}><td>${r.name}<div className="cap">era ${r.orig}</div></td><td>${r.to}</td><td className="r num">${rawCounts[r.key] || 0}</td>
+          <td className="r"><button className="btn btn-quiet" style=${{ minHeight: '30px', padding: '2px 10px', fontSize: '13px' }} onClick=${() => undo(r.key)}>Desfazer</button></td></tr>`)}</tbody></table></div>` : html`<div className="empty">Você ainda não criou regras.</div>`}
+    </section>
+    <section className="card">
+      <div className="card-title">Limites desta análise</div>
+      <ul className="note-list" style=${{ marginTop: '10px' }}>
+        <li>O histórico começa em junho de 2026. Meses anteriores não entram nas médias.</li>
+        <li>Pix para familiares e amigos viram receita ou despesa. Se for dinheiro que só passa por você, marque como Ignorar.</li>
+        <li>As categorias vêm do banco e eu as traduzi. Podem errar, principalmente em Pix.</li>
+        <li>Saldos e limites são uma foto de ${snapshot ? fmtDate(snapshot.asOf) : 'quando você conectou'}. Não atualizam sozinhos.</li>
+        <li>Projeções são estimativas pela média recente. Não preveem compras grandes nem renda extra.</li>
+        <li>Este painel não substitui orientação financeira profissional.</li>
+      </ul>
+    </section>
+  </div>`;
+}
+
+/* ---------- Aplicativo ---------- */
 function App() {
   const stored = useMemo(() => {
     try {
@@ -566,12 +1012,18 @@ function App() {
     } catch (e) { /* armazenamento indisponível */ }
     return null;
   }, []);
+  const prefs = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') || {}; } catch (e) { return {}; }
+  }, []);
   const sample = useMemo(buildSample, []);
   const base = EMBEDDED ? EMBEDDED.txs : sample;
   const baseName = EMBEDDED ? EMBEDDED.name : null;
   const [txs, setTxs] = useState(stored ? stored.txs : base);
   const [source, setSource] = useState(stored ? stored.name : baseName);
   const [notice, setNotice] = useState(null);
+  const [overrides, setOverrides] = useState(prefs.overrides || {});
+  const [budgets, setBudgets] = useState(prefs.budgets || {});
+  const [tab, setTab] = useState(() => { const h = (window.location.hash || '').replace('#', ''); return TABS.some((t) => t[0] === h) ? h : 'visao'; });
   const [year, setYear] = useState('all');
   const [month, setMonth] = useState('all');
   const [type, setType] = useState('all');
@@ -581,17 +1033,38 @@ function App() {
   const [page, setPage] = useState(1);
   const fileRef = useRef(null);
 
-  const years = useMemo(() => [...new Set(txs.map((t) => t.date.slice(0, 4)))].sort().reverse(), [txs]);
+  const isBase = !!EMBEDDED && source === baseName;
+  const snapshot = isBase && EMBEDDED.snapshot ? EMBEDDED.snapshot : null;
+
+  useEffect(() => { try { localStorage.setItem(PREFS_KEY, JSON.stringify({ overrides, budgets })); } catch (e) { /* sem armazenamento */ } }, [overrides, budgets]);
+  useEffect(() => {
+    const onHash = () => { const h = (window.location.hash || '').replace('#', ''); if (TABS.some((t) => t[0] === h)) setTab(h); };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  const goTab = (id) => { setTab(id); try { window.location.hash = id; } catch (e) { /* ignora */ } };
+
+  const eff = useMemo(() => applyOverrides(txs, overrides), [txs, overrides]);
+  const rawCounts = useMemo(() => { const c = {}; txs.forEach((t) => { const k = okey(t); c[k] = (c[k] || 0) + 1; }); return c; }, [txs]);
+  const rules = useMemo(() => Object.entries(overrides).map(([key, to]) => {
+    const [orig, name] = key.split('::');
+    const sample1 = txs.find((t) => okey(t) === key);
+    return { key, orig, to, name: sample1 ? (sample1.who || sample1.desc) : name };
+  }), [overrides, txs]);
+  const setRule = (key, val) => { const n = { ...overrides }; if (!val) delete n[key]; else n[key] = val; setOverrides(n); };
+  const ignoreWho = (who) => { setOverrides({ ...overrides, ['Receita::' + norm(who)]: 'Ignorar', ['Despesa::' + norm(who)]: 'Ignorar' }); };
+
+  const years = useMemo(() => [...new Set(eff.map((t) => t.date.slice(0, 4)))].sort().reverse(), [eff]);
   const catColor = useMemo(() => {
     const totals = {};
-    txs.forEach((t) => { if (t.type === 'Despesa') totals[t.cat] = (totals[t.cat] || 0) + t.value; });
+    eff.forEach((t) => { if (t.type === 'Despesa' && t.value > 0) totals[t.cat] = (totals[t.cat] || 0) + t.value; });
     const map = {};
     Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, CAT_COLORS.length).forEach(([k], i) => { map[k] = CAT_COLORS[i]; });
     return map;
-  }, [txs]);
+  }, [eff]);
 
-  const period = useMemo(() => txs.filter((t) =>
-    (year === 'all' || t.date.slice(0, 4) === year) && (month === 'all' || +t.date.slice(5, 7) === +month)), [txs, year, month]);
+  const period = useMemo(() => eff.filter((t) =>
+    (year === 'all' || t.date.slice(0, 4) === year) && (month === 'all' || +t.date.slice(5, 7) === +month)), [eff, year, month]);
 
   const kpi = useMemo(() => {
     let receita = 0, despesa = 0, invest = 0, nR = 0, nD = 0;
@@ -602,6 +1075,8 @@ function App() {
     });
     return { receita, despesa, invest, nR, nD, saldo: receita - despesa, taxa: receita > 0 ? (invest / receita) * 100 : 0 };
   }, [period]);
+
+  const ins = useMemo(() => computeInsights(eff, period, snapshot, kpi), [eff, period, snapshot, kpi]);
 
   const daily = year !== 'all' && month !== 'all';
   const buckets = useMemo(() => buildBuckets(period, daily, month !== 'all'), [period, daily, month]);
@@ -622,7 +1097,7 @@ function App() {
 
   const rows = useMemo(() => {
     const q = norm(query);
-    const list = period.filter((t) => (type === 'all' || t.type === type) && (!q || norm(t.desc).includes(q) || norm(t.cat).includes(q)));
+    const list = period.filter((t) => (type === 'all' || t.type === type) && (!q || norm(t.desc).includes(q) || norm(t.cat).includes(q) || norm(t.who).includes(q)));
     const dir = sortDir === 'asc' ? 1 : -1;
     list.sort((a, b) => {
       let r;
@@ -634,7 +1109,7 @@ function App() {
     return list;
   }, [period, type, query, sortKey, sortDir]);
 
-  useEffect(() => { setPage(1); }, [year, month, type, query, sortKey, sortDir, txs]);
+  useEffect(() => { setPage(1); }, [year, month, type, query, sortKey, sortDir, txs, overrides]);
   const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
   const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const rowTotals = useMemo(() => {
@@ -644,14 +1119,15 @@ function App() {
   }, [rows]);
 
   const range = useMemo(() => {
-    if (!txs.length) return '';
-    const ds = txs.map((t) => t.date).sort();
+    if (!eff.length) return '';
+    const ds = eff.map((t) => t.date).sort();
     const f = (iso) => MESES_CURTOS[+iso.slice(5, 7) - 1] + '/' + iso.slice(0, 4);
     return f(ds[0]) + ' a ' + f(ds[ds.length - 1]);
-  }, [txs]);
+  }, [eff]);
   const periodLabel = month !== 'all' || year !== 'all'
     ? [month !== 'all' ? MESES[+month - 1] : 'Todos os meses', year !== 'all' ? year : 'todos os anos'].join(' de ')
     : 'Todo o período';
+  const rangeText = ins && ins.first ? `${fmtDate(ins.first)} a ${fmtDate(ins.lastD)}` : periodLabel;
 
   const filtersActive = year !== 'all' || month !== 'all' || type !== 'all' || query !== '';
   const clearFilters = () => { setYear('all'); setMonth('all'); setType('all'); setQuery(''); };
@@ -684,6 +1160,7 @@ function App() {
 
   const dailyNote = daily ? 'por dia' : 'por mês';
   const share = kpi.receita > 0 ? (kpi.despesa / kpi.receita) * 100 : 0;
+  const noData = period.length === 0;
 
   return html`<div className="wrap">
     <header className="flex flex-wrap items-end justify-between gap-4">
@@ -700,95 +1177,77 @@ function App() {
     </header>
 
     <div className="mt-5 flex flex-col gap-3">
-      ${!source ? html`<div className="banner warn">
-        <span><b>Você está vendo dados de exemplo.</b> Importe um arquivo .xlsx ou .csv com as colunas <b>Data, Descrição, Categoria, Tipo</b> (Receita, Despesa ou Investimento) e <b>Valor</b> para ver os seus números.</span>
-      </div>` : null}
-      ${notice ? html`<div className=${'banner ' + notice.kind} role="status">
-        <span>${notice.text}</span>
-        <button className="btn btn-quiet" style=${{ minHeight: '32px', padding: '4px 10px' }} onClick=${() => setNotice(null)}>Fechar</button>
-      </div>` : null}
+      ${!source ? html`<div className="banner warn"><span><b>Você está vendo dados de exemplo.</b> Importe um arquivo .xlsx ou .csv com as colunas <b>Data, Descrição, Categoria, Tipo</b> (Receita, Despesa ou Investimento) e <b>Valor</b> para ver os seus números.</span></div>` : null}
+      ${notice ? html`<div className=${'banner ' + notice.kind} role="status"><span>${notice.text}</span><button className="btn btn-quiet" style=${{ minHeight: '32px', padding: '4px 10px' }} onClick=${() => setNotice(null)}>Fechar</button></div>` : null}
     </div>
 
     <section className="card mt-5" aria-label="Filtro de período">
       <div className="grid gap-3 grid-cols-1 min-[560px]:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] items-end">
-        <div className="field">
-          <label htmlFor="f-year">Ano</label>
+        <div className="field"><label htmlFor="f-year">Ano</label>
           <select id="f-year" className="input" value=${year} onChange=${(e) => setYear(e.target.value)}>
-            <option value="all">Todos os anos</option>
-            ${years.map((y) => html`<option key=${y} value=${y}>${y}</option>`)}
-          </select>
-        </div>
-        <div className="field">
-          <label htmlFor="f-month">Mês</label>
+            <option value="all">Todos os anos</option>${years.map((y) => html`<option key=${y} value=${y}>${y}</option>`)}</select></div>
+        <div className="field"><label htmlFor="f-month">Mês</label>
           <select id="f-month" className="input" value=${month} onChange=${(e) => setMonth(e.target.value)}>
-            <option value="all">Todos os meses</option>
-            ${MESES.map((n, i) => html`<option key=${n} value=${i + 1}>${n}</option>`)}
-          </select>
-        </div>
+            <option value="all">Todos os meses</option>${MESES.map((n, i) => html`<option key=${n} value=${i + 1}>${n}</option>`)}</select></div>
         <button className="btn btn-quiet" onClick=${clearFilters} disabled=${!filtersActive}>Limpar filtros</button>
       </div>
-      <p className="card-sub" style=${{ marginTop: '10px' }}>O período vale para os indicadores, os gráficos e a tabela. Tipo e busca valem para a tabela.</p>
+      <p className="card-sub" style=${{ marginTop: '10px' }}>O período vale para as análises e os gráficos. A posição atual, a previsão e o orçamento usam sempre o mês mais recente.</p>
     </section>
 
-    <section className="mt-5 grid gap-4 grid-cols-1 min-[520px]:grid-cols-2 lg:grid-cols-4" aria-label="Indicadores">
-      <${Kpi} color="var(--rev)" label="Receita total" value=${brl.format(kpi.receita)}>
-        <div className="kpi-note">${kpi.nR} ${kpi.nR === 1 ? 'entrada' : 'entradas'} no período</div>
-      <//>
-      <${Kpi} color="var(--exp)" label="Despesa total" value=${brl.format(kpi.despesa)}>
-        <div className="kpi-note">${fmtPct(share)} da receita · ${kpi.nD} ${kpi.nD === 1 ? 'saída' : 'saídas'}</div>
-      <//>
-      <${Kpi} color="var(--bal)" label="Saldo atual" value=${brl.format(kpi.saldo)}>
-        <div className="kpi-note"><span className=${'pill ' + (kpi.saldo >= 0 ? 'pill-rev' : 'pill-exp')}>${kpi.saldo >= 0 ? '▲ Superávit' : '▼ Déficit'}</span> receitas − despesas</div>
-      <//>
-      <${Kpi} color="var(--inv)" label="Taxa de poupança" value=${fmtPct(kpi.taxa)}>
-        <div className="bar-track" role="img" aria-label=${'Taxa de poupança ' + fmtPct(kpi.taxa)}><div className="bar-fill" style=${{ width: Math.min(100, kpi.taxa) + '%' }}></div></div>
-        <div className="kpi-note">${brl.format(kpi.invest)} investidos</div>
-      <//>
-    </section>
+    <div className="tabs mt-5" role="tablist" aria-label="Seções do painel">
+      ${TABS.map(([id, label]) => html`<button key=${id} role="tab" id=${'tab-' + id} aria-selected=${tab === id} aria-controls=${'panel-' + id} onClick=${() => goTab(id)}>${label}</button>`)}
+    </div>
 
-    ${period.length === 0 ? html`<div className="card mt-5 empty">Nenhum lançamento neste período. <button className="btn btn-quiet" style=${{ marginLeft: '8px' }} onClick=${clearFilters}>Limpar filtros</button></div>` : html`
-    <section className="mt-5 grid gap-4 grid-cols-1 lg:grid-cols-12">
-      <div className="card lg:col-span-5">
-        <div className="card-title">Despesas por categoria</div>
-        <div className="card-sub" style=${{ marginBottom: '14px' }}>Passe o mouse em uma fatia para ver o valor</div>
-        ${slices.length ? html`<${Donut} slices=${slices} total=${slices.reduce((s, x) => s + x.value, 0)} />` : html`<div className="empty">Sem despesas neste período.</div>`}
-      </div>
-      <div className="card lg:col-span-7">
-        <div className="flex flex-wrap items-start justify-between gap-2" style=${{ marginBottom: '8px' }}>
-          <div>
-            <div className="card-title">Receitas x despesas</div>
-            <div className="card-sub">Totais ${dailyNote}</div>
-          </div>
-          <div className="legend">
-            <span><i className="dot" style=${{ background: 'var(--rev)' }}></i>Receitas</span>
-            <span><i className="dot" style=${{ background: 'var(--exp)' }}></i>Despesas</span>
-          </div>
-        </div>
-        <${BarChart} data=${buckets} />
-      </div>
-      <div className="card lg:col-span-12">
-        <div className="flex flex-wrap items-start justify-between gap-2" style=${{ marginBottom: '8px' }}>
-          <div>
-            <div className="card-title">Evolução do saldo acumulado</div>
-            <div className="card-sub">Soma de receitas − despesas ${dailyNote}, desde o início do período</div>
-          </div>
-          <div className="legend"><span><i className="dot" style=${{ background: 'var(--bal)' }}></i>Saldo acumulado</span></div>
-        </div>
-        <${LineChart} data=${buckets} />
-      </div>
-    </section>`}
+    ${tab === 'visao' ? html`<div id="panel-visao" role="tabpanel" aria-labelledby="tab-visao" className="mt-5 flex flex-col gap-5">
+      ${noData || !ins ? html`<div className="card empty">Nenhum lançamento neste período. <button className="btn btn-quiet" style=${{ marginLeft: '8px' }} onClick=${clearFilters}>Limpar filtros</button></div>` : html`
+      <${Hero} ins=${ins} kpi=${kpi} rangeText=${rangeText} />
+      <section className="grid gap-4 grid-cols-1 min-[520px]:grid-cols-2 lg:grid-cols-4" aria-label="Indicadores">
+        <${Kpi} color="var(--rev)" label="Receita total" value=${brl.format(kpi.receita)}><div className="kpi-note">${kpi.nR} ${kpi.nR === 1 ? 'entrada' : 'entradas'} no período</div><//>
+        <${Kpi} color="var(--exp)" label="Despesa total" value=${brl.format(kpi.despesa)}><div className="kpi-note">${fmtPct(share)} da receita · ${kpi.nD} ${kpi.nD === 1 ? 'saída' : 'saídas'}</div><//>
+        <${Kpi} color="var(--bal)" label="Saldo do período" value=${brl.format(kpi.saldo)}><div className="kpi-note"><span className=${'pill ' + (kpi.saldo >= 0 ? 'pill-rev' : 'pill-exp')}>${kpi.saldo >= 0 ? '▲ Superávit' : '▼ Déficit'}</span> receitas − despesas</div><//>
+        <${Kpi} color="var(--inv)" label="Taxa de poupança" value=${fmtPct(kpi.taxa)}>
+          <div className="bar-track" role="img" aria-label=${'Taxa de poupança ' + fmtPct(kpi.taxa)}><div className="bar-fill" style=${{ width: Math.min(100, kpi.taxa) + '%' }}></div></div>
+          <div className="kpi-note">${brl.format(kpi.invest)} investidos</div><//>
+      </section>
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2"><${Forecast} ins=${ins} /><${Position} ins=${ins} snapshot=${snapshot} /></div>
+      <${Actions} ins=${ins} />
+      <${Thermometer} ins=${ins} />
+      <${Budget} key=${ins.months.length + source} ins=${ins} budgets=${budgets} setBudgets=${setBudgets} />`}
+    </div>` : null}
 
-    <section className="card mt-5" aria-label="Lançamentos">
+    ${tab === 'fluxo' ? html`<div id="panel-fluxo" role="tabpanel" aria-labelledby="tab-fluxo" className="mt-5 flex flex-col gap-5">
+      ${noData ? html`<div className="card empty">Nenhum lançamento neste período. <button className="btn btn-quiet" style=${{ marginLeft: '8px' }} onClick=${clearFilters}>Limpar filtros</button></div>` : html`
+      <section className="grid gap-4 grid-cols-1 lg:grid-cols-12">
+        <div className="card lg:col-span-5">
+          <div className="card-title">Despesas por categoria</div>
+          <div className="card-sub" style=${{ marginBottom: '14px' }}>Passe o mouse em uma fatia para ver o valor</div>
+          ${slices.length ? html`<${Donut} slices=${slices} total=${slices.reduce((s, x) => s + x.value, 0)} />` : html`<div className="empty">Sem despesas neste período.</div>`}
+        </div>
+        <div className="card lg:col-span-7">
+          <div className="flex flex-wrap items-start justify-between gap-2" style=${{ marginBottom: '8px' }}>
+            <div><div className="card-title">Receitas x despesas</div><div className="card-sub">Totais ${dailyNote}</div></div>
+            <div className="legend"><span><i className="dot" style=${{ background: 'var(--rev)' }}></i>Receitas</span><span><i className="dot" style=${{ background: 'var(--exp)' }}></i>Despesas</span></div>
+          </div>
+          <${BarChart} data=${buckets} />
+        </div>
+        <div className="card lg:col-span-12">
+          <div className="flex flex-wrap items-start justify-between gap-2" style=${{ marginBottom: '8px' }}>
+            <div><div className="card-title">Evolução do saldo acumulado</div><div className="card-sub">Soma de receitas − despesas ${dailyNote}, desde o início do período</div></div>
+            <div className="legend"><span><i className="dot" style=${{ background: 'var(--bal)' }}></i>Saldo acumulado</span></div>
+          </div>
+          <${LineChart} data=${buckets} />
+        </div>
+      </section>
+      <section className="grid gap-4 grid-cols-1 lg:grid-cols-2"><${Destinations} list=${period} totalDesp=${kpi.despesa} /><${People} list=${period} onIgnore=${ignoreWho} /></section>
+      <${Recurring} list=${eff} />`}
+    </div>` : null}
+
+    ${tab === 'lancamentos' ? html`<section id="panel-lancamentos" role="tabpanel" aria-labelledby="tab-lancamentos" className="card mt-5" aria-label="Lançamentos">
       <div className="flex flex-wrap items-end justify-between gap-3" style=${{ marginBottom: '14px' }}>
-        <div>
-          <div className="card-title">Lançamentos</div>
-          <div className="card-sub num">${rows.length} ${rows.length === 1 ? 'resultado' : 'resultados'}</div>
-        </div>
+        <div><div className="card-title">Lançamentos</div><div className="card-sub num">${rows.length} ${rows.length === 1 ? 'resultado' : 'resultados'}. Use "Tratar como" para corrigir a classificação.</div></div>
         <div className="flex flex-wrap items-end gap-3" style=${{ minWidth: 0 }}>
           <div className="seg" role="group" aria-label="Filtrar por tipo">
-            ${['all', ...TIPOS].map((t) => html`<button key=${t} aria-pressed=${type === t} onClick=${() => setType(t)}>
-              ${t === 'all' ? 'Todos' : html`<i className="dot" style=${{ background: TYPE_COLOR[t] }}></i>${t}`}
-            </button>`)}
+            ${['all', ...TIPOS].map((t) => html`<button key=${t} aria-pressed=${type === t} onClick=${() => setType(t)}>${t === 'all' ? 'Todos' : html`<i className="dot" style=${{ background: TYPE_COLOR[t] }}></i>${t}`}</button>`)}
           </div>
           <div className="field" style=${{ width: 'min(100%, 260px)' }}>
             <label htmlFor="f-query" className="sr-only">Buscar na descrição</label>
@@ -796,42 +1255,45 @@ function App() {
           </div>
         </div>
       </div>
-
       ${rows.length === 0 ? html`<div className="empty">Nenhum lançamento encontrado com esses filtros.<br /><button className="btn btn-quiet" style=${{ marginTop: '10px' }} onClick=${clearFilters}>Limpar filtros</button></div>` : html`
-      <div className="table-wrap">
-        <table className="tx">
-          <thead><tr>
-            <th aria-sort=${ariaSort('date')}><button onClick=${() => onSort('date')}>Data ${sortMark('date')}</button></th>
-            <th aria-sort=${ariaSort('desc')}><button onClick=${() => onSort('desc')}>Descrição ${sortMark('desc')}</button></th>
-            <th aria-sort=${ariaSort('cat')}><button onClick=${() => onSort('cat')}>Categoria ${sortMark('cat')}</button></th>
-            <th aria-sort=${ariaSort('type')}><button onClick=${() => onSort('type')}>Tipo ${sortMark('type')}</button></th>
-            <th className="r" aria-sort=${ariaSort('value')}><button onClick=${() => onSort('value')}>Valor ${sortMark('value')}</button></th>
-          </tr></thead>
-          <tbody>
-            ${pageRows.map((t) => html`<tr key=${t.id}>
-              <td className="num" style=${{ whiteSpace: 'nowrap', color: 'var(--ink-2)' }}>${fmtDate(t.date)}</td>
-              <td style=${{ minWidth: '160px' }}>${t.desc}</td>
-              <td style=${{ color: 'var(--ink-2)' }}>${t.cat}</td>
-              <td><span className=${'pill ' + TYPE_PILL[t.type]}>${TYPE_GLYPH[t.type]} ${t.type}</span></td>
-              <td className="r num" style=${{ whiteSpace: 'nowrap', fontWeight: 600 }}>${t.type === 'Receita' || (t.type === 'Despesa' && t.value < 0) ? '+ ' : t.type === 'Despesa' ? '− ' : ''}${brl.format(Math.abs(t.value))}</td>
-            </tr>`)}
-          </tbody>
-        </table>
-      </div>
+      <div className="table-wrap"><table className="tx" style=${{ minWidth: '780px' }}>
+        <thead><tr>
+          <th aria-sort=${ariaSort('date')}><button onClick=${() => onSort('date')}>Data ${sortMark('date')}</button></th>
+          <th aria-sort=${ariaSort('desc')}><button onClick=${() => onSort('desc')}>Descrição ${sortMark('desc')}</button></th>
+          <th aria-sort=${ariaSort('cat')}><button onClick=${() => onSort('cat')}>Categoria ${sortMark('cat')}</button></th>
+          <th aria-sort=${ariaSort('type')}><button onClick=${() => onSort('type')}>Tipo ${sortMark('type')}</button></th>
+          <th className="r" aria-sort=${ariaSort('value')}><button onClick=${() => onSort('value')}>Valor ${sortMark('value')}</button></th>
+          <th>Tratar como</th>
+        </tr></thead>
+        <tbody>
+          ${pageRows.map((t) => html`<tr key=${t.id}>
+            <td className="num" style=${{ whiteSpace: 'nowrap', color: 'var(--ink-2)' }}>${fmtDate(t.date)}</td>
+            <td style=${{ minWidth: '170px' }}>${t.desc}${t.pending ? html` <span className="tag">pendente</span>` : null}${t.src ? html`<div className="cap">${t.src}</div>` : null}</td>
+            <td style=${{ color: 'var(--ink-2)' }}>${t.cat}</td>
+            <td><span className=${'pill ' + TYPE_PILL[t.type]}>${TYPE_GLYPH[t.type]} ${t.type}</span>${t.over ? html` <span className="tag">ajustado</span>` : null}</td>
+            <td className="r num" style=${{ whiteSpace: 'nowrap', fontWeight: 600 }}>${t.type === 'Receita' || (t.type === 'Despesa' && t.value < 0) ? '+ ' : t.type === 'Despesa' ? '− ' : ''}${brl.format(Math.abs(t.value))}</td>
+            <td><select className="input mini" aria-label=${'Tratar ' + t.desc + ' como'} value=${overrides[t.ok] || ''} onChange=${(e) => setRule(t.ok, e.target.value)}>
+              <option value="">Padrão</option><option value="Receita">Receita</option><option value="Despesa">Despesa</option><option value="Investimento">Investimento</option><option value="Ignorar">Ignorar</option></select></td>
+          </tr>`)}
+        </tbody>
+      </table></div>
       <div className="flex flex-wrap items-center justify-between gap-3" style=${{ marginTop: '14px' }}>
-        <div className="card-sub num">
-          Receitas ${brl.format(rowTotals.Receita)} · Despesas ${brl.format(rowTotals.Despesa)} · Investimentos ${brl.format(rowTotals.Investimento)}
-        </div>
+        <div className="card-sub num">Receitas ${brl.format(rowTotals.Receita)} · Despesas ${brl.format(rowTotals.Despesa)} · Investimentos ${brl.format(rowTotals.Investimento)}</div>
         <div className="flex items-center gap-2">
           <button className="btn" onClick=${() => setPage(page - 1)} disabled=${page <= 1}>Anterior</button>
           <span className="card-sub num">Página ${page} de ${pages}</span>
           <button className="btn" onClick=${() => setPage(page + 1)} disabled=${page >= pages}>Próxima</button>
         </div>
-      </div>`}
-    </section>
+      </div>
+      <p className="cap" style=${{ marginTop: '10px' }}>A regra vale para todos os lançamentos do mesmo nome e tipo. Ela fica salva neste navegador e pode ser desfeita na aba Dados e confiança.</p>`}
+    </section>` : null}
 
-    <footer className="card-sub" style=${{ marginTop: '20px' }}>
-      Saldo = receitas − despesas. Taxa de poupança = investimentos ÷ receitas. Os dados importados ficam apenas neste navegador.
+    ${tab === 'dados' ? html`<div id="panel-dados" role="tabpanel" aria-labelledby="tab-dados" className="mt-5">
+      <${DataTab} snapshot=${snapshot} embedded=${EMBEDDED} eff=${eff} rules=${rules} rawCounts=${rawCounts} undo=${(k) => setRule(k, '')} isBase=${isBase} />
+    </div>` : null}
+
+    <footer className="card-sub" style=${{ marginTop: '24px' }}>
+      Saldo = receitas − despesas. Taxa de poupança = investimentos ÷ receitas. Os dados importados e as suas regras ficam apenas neste navegador.
     </footer>
   </div>`;
 }

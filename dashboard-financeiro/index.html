@@ -1,0 +1,835 @@
+<title>Painel Financeiro Pessoal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: cabeçalho + filtro de período, 4 KPIs, rosca ao lado das barras, linha em largura total, tabela de lançamentos. Dark mode único. */
+:root {
+  --bg: #0a0f1e;
+  --surface: #121a2c;
+  --surface-2: #18223a;
+  --line: #233049;
+  --line-soft: #1b2640;
+  --ink: #eaf0fb;
+  --ink-2: #b0bbd3;
+  --ink-3: #8a97b3;
+  --rev: #22d3ee;
+  --exp: #fb7185;
+  --inv: #34d399;
+  --bal: #a5b4fc;
+  --focus: #60a5fa;
+  --warn: #fbbf24;
+  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: dark;
+}
+body {
+  background-color: var(--bg);
+  background-image: radial-gradient(900px 380px at 8% -8%, rgba(34, 211, 238, .08), transparent 70%),
+                    radial-gradient(700px 320px at 100% 0%, rgba(251, 113, 133, .06), transparent 70%);
+  background-repeat: no-repeat;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-block: 24px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.num { font-variant-numeric: tabular-nums; }
+.display { font-family: var(--font-display); letter-spacing: -0.01em; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-width: 0; }
+.card-title { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--ink); }
+.card-sub { color: var(--ink-3); font-size: 13px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 10px; padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer; min-height: 40px; transition: border-color .15s, background .15s; }
+.btn:hover { border-color: #3a4a6d; background: #1d2946; }
+.btn-primary { background: var(--rev); color: #04222a; border-color: var(--rev); }
+.btn-primary:hover { background: #5be3f5; border-color: #5be3f5; }
+.btn-quiet { background: transparent; }
+.btn:disabled { opacity: .4; cursor: default; }
+:where(button, select, input, summary, [tabindex]):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field > label { font-size: 12px; color: var(--ink-3); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.input { width: 100%; background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; min-height: 40px; font-size: 14px; font-family: inherit; }
+.input::placeholder { color: var(--ink-3); }
+select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238a97b3' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; }
+.seg button { border: 0; background: transparent; color: var(--ink-2); font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 8px; cursor: pointer; min-height: 32px; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: #25324f; color: var(--ink); box-shadow: inset 0 0 0 1px #3a4a6d; }
+.dot { width: 9px; height: 9px; border-radius: 3px; display: inline-block; flex: none; }
+.kpi-label { display: flex; align-items: center; gap: 8px; color: var(--ink-2); font-size: 13px; font-weight: 600; }
+.kpi-value { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 3.2vw, 32px); line-height: 1.1; margin-top: 10px; overflow-wrap: anywhere; letter-spacing: -0.02em; }
+.kpi-note { margin-top: 8px; color: var(--ink-3); font-size: 13px; }
+.pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid transparent; white-space: nowrap; }
+.pill-rev { color: var(--rev); background: rgba(34, 211, 238, .12); border-color: rgba(34, 211, 238, .28); }
+.pill-exp { color: var(--exp); background: rgba(251, 113, 133, .12); border-color: rgba(251, 113, 133, .28); }
+.pill-inv { color: var(--inv); background: rgba(52, 211, 153, .12); border-color: rgba(52, 211, 153, .28); }
+.bar-track { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin-top: 10px; }
+.bar-fill { height: 100%; border-radius: 999px; background: var(--inv); }
+.tt { position: absolute; z-index: 5; pointer-events: none; background: #0d1426; border: 1px solid #34456a; border-radius: 10px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 8px 24px rgba(0, 0, 0, .45); min-width: 150px; transform: translateX(-50%); }
+.tt-title { color: var(--ink-2); font-weight: 600; margin-bottom: 4px; }
+.tt-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; color: var(--ink); }
+.tt-row span:first-child { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; color: var(--ink-2); font-size: 13px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.axis-text { fill: var(--ink-3); font-size: 11.5px; font-family: var(--font-body); }
+.donut-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 200px; }
+.donut-legend li { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; font-size: 13.5px; cursor: default; }
+.donut-legend li:hover, .donut-legend li.on { background: var(--surface-2); }
+.donut-legend .nm { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.donut-legend .pc { color: var(--ink-3); width: 46px; text-align: right; }
+.donut-legend .vl { color: var(--ink); text-align: right; min-width: 88px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+table.tx { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 14px; }
+table.tx th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); font-weight: 600; padding: 10px 14px; background: var(--surface-2); border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.tx th button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; color: inherit; text-transform: inherit; letter-spacing: inherit; font-weight: inherit; font-size: inherit; }
+table.tx th button:hover { color: var(--ink); }
+table.tx th button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+table.tx td { padding: 10px 14px; border-bottom: 1px solid var(--line-soft); color: var(--ink); vertical-align: middle; }
+table.tx tbody tr:last-child td { border-bottom: 0; }
+table.tx tbody tr:hover td { background: rgba(255, 255, 255, .025); }
+table.tx td.r, table.tx th.r { text-align: right; }
+.banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 14px; color: var(--ink-2); }
+.banner.warn { border-color: rgba(251, 191, 36, .35); background: rgba(251, 191, 36, .07); }
+.banner.ok { border-color: rgba(52, 211, 153, .35); background: rgba(52, 211, 153, .07); }
+.banner.err { border-color: rgba(251, 113, 133, .4); background: rgba(251, 113, 133, .08); }
+.banner b { color: var(--ink); font-weight: 600; }
+.empty { padding: 40px 16px; text-align: center; color: var(--ink-3); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const { useState, useMemo, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+/* ---------- Constantes e formatação ---------- */
+const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const MESES_CURTOS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+const TIPOS = ['Receita', 'Despesa', 'Investimento'];
+const TYPE_COLOR = { Receita: 'var(--rev)', Despesa: 'var(--exp)', Investimento: 'var(--inv)' };
+const TYPE_PILL = { Receita: 'pill-rev', Despesa: 'pill-exp', Investimento: 'pill-inv' };
+const TYPE_GLYPH = { Receita: '↑', Despesa: '↓', Investimento: '◆' };
+/* Categóricas validadas para fundo escuro (ordem fixa). A 8ª posição é "Outras". */
+const CAT_COLORS = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#9085e9', '#2fb5c4'];
+const OTHER_COLOR = '#6b7894';
+const STORE_KEY = 'painel-financeiro-v1';
+const PAGE_SIZE = 12;
+
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+const pad = (n) => String(n).padStart(2, '0');
+const fmtPct = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+const fmtDate = (iso) => iso.slice(8, 10) + '/' + iso.slice(5, 7) + '/' + iso.slice(0, 4);
+const fmtAxis = (v) => {
+  if (v === 0) return '0';
+  if (Math.abs(v) >= 1000) return (v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' mil';
+  return v.toLocaleString('pt-BR');
+};
+const norm = (s) => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+/* ---------- Dados de exemplo (determinísticos) ---------- */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function buildSample() {
+  const rnd = mulberry32(2026);
+  const out = [];
+  let id = 1;
+  const add = (date, desc, cat, type, value) => out.push({ id: id++, date, desc, cat, type, value: Math.round(value * 100) / 100 });
+  const months = [[2026, 6], [2026, 7], [2026, 8], [2026, 9], [2026, 10], [2026, 11]];
+  const freela = [1800, 0, 2200, 1500, 2600, 900];
+  const aportes = [[1500, 800, 600], [1500, 800, 0], [1500, 1000, 600], [1500, 800, 500], [1800, 1000, 700], [1500, 800, 0]];
+  months.forEach(([y, m], i) => {
+    const last = m === 11 ? 9 : 28;
+    const put = (day, desc, cat, type, value) => { if (day <= last && value > 0) add(`${y}-${pad(m)}-${pad(day)}`, desc, cat, type, value); };
+    put(5, 'Salário', 'Salário', 'Receita', 8400);
+    put(8, 'Projeto freelance', 'Freelance', 'Receita', freela[i]);
+    put(15, 'Dividendos e FIIs', 'Rendimentos', 'Receita', 120 + rnd() * 90);
+    put(6, 'Aluguel', 'Moradia', 'Despesa', i >= 3 ? 2250 : 2100);
+    put(6, 'Condomínio', 'Moradia', 'Despesa', 480);
+    put(8, 'Conta de energia', 'Moradia', 'Despesa', 190 + rnd() * 120);
+    put(8, 'Internet fibra', 'Moradia', 'Despesa', 119.9);
+    [3, 9, 17, 25].forEach((d) => put(d, 'Supermercado', 'Alimentação', 'Despesa', 330 + rnd() * 190));
+    [4, 13, 21, 27].forEach((d) => put(d, 'Delivery iFood', 'Alimentação', 'Despesa', 38 + rnd() * 70));
+    [14, 23].forEach((d) => put(d, 'Restaurante', 'Alimentação', 'Despesa', 60 + rnd() * 90));
+    [2, 9, 16, 24].forEach((d) => put(d, 'Uber', 'Transporte', 'Despesa', 16 + rnd() * 30));
+    [7, 21].forEach((d) => put(d, 'Combustível', 'Transporte', 'Despesa', 210 + rnd() * 60));
+    put(9, 'Netflix', 'Lazer', 'Despesa', 55.9);
+    put(9, 'Spotify', 'Lazer', 'Despesa', 21.9);
+    put(5, 'Academia', 'Saúde', 'Despesa', 129.9);
+    put(5, 'Plano de saúde', 'Saúde', 'Despesa', 520);
+    put(8, 'Curso online', 'Educação', 'Despesa', 99);
+    if (rnd() > 0.45) put(12, 'Farmácia', 'Saúde', 'Despesa', 45 + rnd() * 110);
+    if (rnd() > 0.4) put(18, 'Cinema e show', 'Lazer', 'Despesa', 90 + rnd() * 170);
+    if (rnd() > 0.5) put(20, 'Roupas', 'Compras', 'Despesa', 180 + rnd() * 240);
+    put(6, 'Tesouro Selic', 'Renda fixa', 'Investimento', aportes[i][0]);
+    put(7, 'CDB liquidez diária', 'Renda fixa', 'Investimento', aportes[i][1]);
+    put(20, 'Ações e FIIs', 'Renda variável', 'Investimento', aportes[i][2]);
+  });
+  return out;
+}
+
+/* ---------- Importação de planilhas ---------- */
+const ALIASES = {
+  date: ['data', 'date', 'dt', 'data lancamento', 'data do lancamento', 'vencimento', 'competencia'],
+  desc: ['descricao', 'description', 'historico', 'lancamento', 'detalhe', 'detalhes', 'memo', 'nome'],
+  cat: ['categoria', 'category', 'grupo'],
+  type: ['tipo', 'type', 'natureza', 'movimento', 'operacao'],
+  value: ['valor', 'value', 'montante', 'amount', 'valor (r$)', 'valor r$'],
+  rec: ['receita', 'receitas', 'entrada', 'entradas', 'credito'],
+  desp: ['despesa', 'despesas', 'saida', 'saidas', 'debito'],
+};
+function parseDate(v) {
+  if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad(v.getMonth() + 1)}-${pad(v.getDate())}`;
+  if (typeof v === 'number' && v > 20000 && v < 80000) {
+    return new Date(Date.UTC(1899, 11, 30) + Math.floor(v) * 864e5).toISOString().slice(0, 10);
+  }
+  const s = String(v == null ? '' : v).trim();
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  let y, mo, d;
+  if (m) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+  else {
+    m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
+    if (!m) return null;
+    d = +m[1]; mo = +m[2]; y = +m[3];
+    if (y < 100) y += 2000;
+  }
+  if (mo < 1 || mo > 12 || d < 1 || d > 31 || y < 1990 || y > 2100) return null;
+  return `${y}-${pad(mo)}-${pad(d)}`;
+}
+function parseValue(v) {
+  if (typeof v === 'number') return isFinite(v) ? v : NaN;
+  let s = String(v == null ? '' : v).trim();
+  if (!s) return NaN;
+  const neg = /^\(.*\)$/.test(s) || /-/.test(s) || /\bD\b/.test(s);
+  s = s.replace(/[^\d,.]/g, '');
+  if (!s) return NaN;
+  const lc = s.lastIndexOf(','), ld = s.lastIndexOf('.');
+  if (lc >= 0 && ld >= 0) s = lc > ld ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+  else if (lc >= 0) s = /,\d{1,2}$/.test(s) ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+  else if (ld >= 0 && (s.split('.').length > 2 || /\.\d{3}$/.test(s))) s = s.replace(/\./g, '');
+  const n = parseFloat(s);
+  return isNaN(n) ? NaN : neg ? -n : n;
+}
+function parseType(raw, signed) {
+  const t = norm(raw);
+  if (/^(rec|ent|cred|renda|rend|sal)/.test(t)) return 'Receita';
+  if (/^(desp|sai|deb|gast|pag)/.test(t)) return 'Despesa';
+  if (/^(inv|aplic|aport|poup|trans)/.test(t)) return 'Investimento';
+  return signed < 0 ? 'Despesa' : 'Receita';
+}
+function rowsToTx(aoa) {
+  let hi = -1, cols = null;
+  for (let i = 0; i < Math.min(aoa.length, 20); i++) {
+    const h = aoa[i].map(norm);
+    const find = (k) => h.findIndex((x) => ALIASES[k].includes(x));
+    const c = { date: find('date'), desc: find('desc'), cat: find('cat'), type: find('type'), value: find('value'), rec: find('rec'), desp: find('desp') };
+    if (c.date >= 0 && (c.value >= 0 || c.rec >= 0 || c.desp >= 0)) { hi = i; cols = c; break; }
+  }
+  if (hi < 0) throw new Error('Não encontrei as colunas esperadas. A primeira linha precisa ter: Data, Descrição, Categoria, Tipo e Valor.');
+  const txs = [];
+  let skipped = 0, id = 1;
+  for (let i = hi + 1; i < aoa.length; i++) {
+    const r = aoa[i];
+    if (!r || r.every((c) => c === '' || c == null)) continue;
+    const date = parseDate(r[cols.date]);
+    let value = NaN, type = null;
+    if (cols.value >= 0) {
+      value = parseValue(r[cols.value]);
+      if (!isNaN(value)) type = parseType(cols.type >= 0 ? r[cols.type] : '', value);
+    }
+    if ((isNaN(value) || value === 0) && (cols.rec >= 0 || cols.desp >= 0)) {
+      const a = cols.rec >= 0 ? parseValue(r[cols.rec]) : NaN;
+      const b = cols.desp >= 0 ? parseValue(r[cols.desp]) : NaN;
+      if (!isNaN(a) && a !== 0) { value = a; type = 'Receita'; }
+      else if (!isNaN(b) && b !== 0) { value = b; type = 'Despesa'; }
+    }
+    if (!date || isNaN(value) || !type) { skipped++; continue; }
+    const cat = cols.cat >= 0 && String(r[cols.cat]).trim() ? String(r[cols.cat]).trim() : 'Outros';
+    const desc = cols.desc >= 0 && String(r[cols.desc]).trim() ? String(r[cols.desc]).trim() : cat;
+    txs.push({ id: id++, date, desc, cat, type, value: Math.abs(value) });
+  }
+  if (!txs.length) throw new Error('A planilha foi lida, mas nenhuma linha tinha data e valor válidos.');
+  return { txs, skipped };
+}
+function parseCSV(text) {
+  const first = text.split(/\r?\n/, 1)[0] || '';
+  const delim = (first.match(/;/g) || []).length >= (first.match(/,/g) || []).length ? ';' : ',';
+  const rows = [];
+  let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) {
+      if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (ch === '"') q = false;
+      else cell += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === delim) { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') {
+      if (ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(cell); cell = ''; rows.push(row); row = [];
+    } else cell += ch;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+function readFile(file) {
+  return new Promise((resolve, reject) => {
+    const isCsv = /\.(csv|txt)$/i.test(file.name);
+    const fr = new FileReader();
+    fr.onerror = () => reject(new Error('Não foi possível ler o arquivo.'));
+    fr.onload = () => {
+      try {
+        if (isCsv) {
+          let text;
+          try { text = new TextDecoder('utf-8', { fatal: true }).decode(fr.result); }
+          catch (e) { text = new TextDecoder('windows-1252').decode(fr.result); }
+          resolve(rowsToTx(parseCSV(text.replace(/^﻿/, ''))));
+          return;
+        }
+        if (typeof XLSX === 'undefined') throw new Error('A biblioteca de planilhas não carregou. Recarregue a página ou envie um arquivo .csv.');
+        const wb = XLSX.read(fr.result, { type: 'array' });
+        let lastErr = null;
+        for (const name of wb.SheetNames) {
+          try {
+            const aoa = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: true, defval: '' });
+            resolve(rowsToTx(aoa));
+            return;
+          } catch (e) { lastErr = e; }
+        }
+        throw lastErr || new Error('Planilha vazia.');
+      } catch (e) { reject(e); }
+    };
+    fr.readAsArrayBuffer(file);
+  });
+}
+
+/* ---------- Agregações ---------- */
+function buildBuckets(rows, daily, singleMonth) {
+  if (!rows.length) return [];
+  const mk = (key, label, title) => ({ key, label, title, receita: 0, despesa: 0, invest: 0 });
+  let buckets;
+  if (daily) {
+    const [y, m] = rows[0].date.split('-').map(Number);
+    const last = Math.max(...rows.map((r) => +r.date.slice(8, 10)));
+    buckets = Array.from({ length: last }, (_, i) => mk(String(i + 1), String(i + 1), `${pad(i + 1)}/${pad(m)}/${y}`));
+  } else {
+    const present = [...new Set(rows.map((r) => r.date.slice(0, 7)))].sort();
+    let keys = present;
+    if (!singleMonth) {
+      keys = [];
+      let [y, m] = present[0].split('-').map(Number);
+      const [y1, m1] = present[present.length - 1].split('-').map(Number);
+      while (y < y1 || (y === y1 && m <= m1)) {
+        keys.push(`${y}-${pad(m)}`);
+        m++; if (m > 12) { m = 1; y++; }
+      }
+    }
+    const multiYear = present[0].slice(0, 4) !== present[present.length - 1].slice(0, 4);
+    buckets = keys.map((k) => {
+      const [y, m] = k.split('-').map(Number);
+      return mk(k, MESES_CURTOS[m - 1] + (multiYear ? '/' + String(y).slice(2) : ''), `${MESES[m - 1]} de ${y}`);
+    });
+  }
+  const index = {};
+  buckets.forEach((b, i) => { index[b.key] = i; });
+  rows.forEach((r) => {
+    const b = buckets[index[daily ? String(+r.date.slice(8, 10)) : r.date.slice(0, 7)]];
+    if (!b) return;
+    if (r.type === 'Receita') b.receita += r.value;
+    else if (r.type === 'Despesa') b.despesa += r.value;
+    else b.invest += r.value;
+  });
+  let acc = 0;
+  buckets.forEach((b) => { b.net = b.receita - b.despesa; acc += b.net; b.saldo = acc; });
+  return buckets;
+}
+function niceTicks(min, max, count = 4) {
+  if (max <= min) max = min + 1;
+  const raw = (max - min) / count;
+  const p = Math.pow(10, Math.floor(Math.log10(raw)));
+  const f = raw / p;
+  const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+  const start = Math.floor(min / step) * step;
+  const end = Math.ceil(max / step) * step;
+  const t = [];
+  for (let v = start; v <= end + step / 2; v += step) t.push(Math.round(v * 1e6) / 1e6);
+  return t;
+}
+
+/* ---------- Hooks ---------- */
+function useWidth() {
+  const ref = useRef(null);
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const upd = () => setW(Math.floor(el.getBoundingClientRect().width));
+    upd();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', upd);
+      return () => window.removeEventListener('resize', upd);
+    }
+    const ro = new ResizeObserver(upd);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, w];
+}
+
+/* ---------- Componentes ---------- */
+function Tooltip({ x, w, title, rows }) {
+  const left = Math.min(Math.max(x, 90), Math.max(90, w - 90));
+  return html`<div className="tt" style=${{ left: left + 'px', top: '4px' }}>
+    <div className="tt-title">${title}</div>
+    ${rows.map((r) => html`<div className="tt-row num" key=${r.label}>
+      <span>${r.color ? html`<i className="dot" style=${{ background: r.color }}></i>` : null}${r.label}</span>
+      <b>${r.value}</b>
+    </div>`)}
+  </div>`;
+}
+
+function xLabelEvery(band, minGap) { return Math.max(1, Math.ceil(minGap / Math.max(band, 1))); }
+
+function BarChart({ data }) {
+  const [ref, w] = useWidth();
+  const [hi, setHi] = useState(null);
+  const H = 272, m = { t: 14, r: 10, b: 30, l: 56 };
+  const iw = Math.max(0, w - m.l - m.r), ih = H - m.t - m.b;
+  const max = Math.max(1, ...data.flatMap((d) => [d.receita, d.despesa]));
+  const ticks = niceTicks(0, max);
+  const top = ticks[ticks.length - 1];
+  const y = (v) => m.t + ih - (v / top) * ih;
+  const band = iw / Math.max(1, data.length);
+  const bw = Math.min(26, Math.max(3, band * 0.36));
+  const every = xLabelEvery(band, 38);
+  const barPath = (x, v) => {
+    const h = (v / top) * ih;
+    if (h <= 0.5) return '';
+    const yt = y(v), yb = m.t + ih, r = Math.min(4, bw / 2, h);
+    return `M${x} ${yb}V${yt + r}Q${x} ${yt} ${x + r} ${yt}H${x + bw - r}Q${x + bw} ${yt} ${x + bw} ${yt + r}V${yb}Z`;
+  };
+  const h = hi != null ? data[hi] : null;
+  return html`<div ref=${ref} className="relative" style=${{ height: H + 'px' }} onMouseLeave=${() => setHi(null)}>
+    ${w > 0 ? html`<svg width=${w} height=${H} role="img" aria-label="Receitas e despesas por período">
+      ${ticks.map((t) => html`<g key=${t}>
+        <line x1=${m.l} x2=${w - m.r} y1=${y(t)} y2=${y(t)} stroke="var(--line)" strokeOpacity=${t === 0 ? 1 : 0.55} strokeDasharray=${t === 0 ? '' : '3 4'} />
+        <text className="axis-text" x=${m.l - 8} y=${y(t) + 4} textAnchor="end">${fmtAxis(t)}</text>
+      </g>`)}
+      ${data.map((d, i) => {
+        const cx = m.l + (i + 0.5) * band;
+        return html`<g key=${d.key}>
+          ${hi === i ? html`<rect x=${m.l + i * band} y=${m.t} width=${band} height=${ih} fill="#ffffff" fillOpacity="0.045" rx="6" />` : null}
+          <path d=${barPath(cx - bw - 1, d.receita)} fill="var(--rev)" />
+          <path d=${barPath(cx + 1, d.despesa)} fill="var(--exp)" />
+          ${i % every === 0 ? html`<text className="axis-text" x=${cx} y=${H - 9} textAnchor="middle">${d.label}</text>` : null}
+          <rect x=${m.l + i * band} y=${m.t} width=${band} height=${ih} fill="transparent" onMouseEnter=${() => setHi(i)} onMouseMove=${() => setHi(i)} onTouchStart=${() => setHi(i)} />
+        </g>`;
+      })}
+    </svg>` : null}
+    ${h ? html`<${Tooltip} x=${m.l + (hi + 0.5) * band} w=${w} title=${h.title} rows=${[
+      { label: 'Receitas', value: brl.format(h.receita), color: 'var(--rev)' },
+      { label: 'Despesas', value: brl.format(h.despesa), color: 'var(--exp)' },
+      { label: 'Resultado', value: brl.format(h.net) },
+    ]} />` : null}
+  </div>`;
+}
+
+function LineChart({ data }) {
+  const [ref, w] = useWidth();
+  const [hi, setHi] = useState(null);
+  const H = 272, m = { t: 22, r: 14, b: 30, l: 60 };
+  const iw = Math.max(0, w - m.l - m.r), ih = H - m.t - m.b;
+  const vals = data.map((d) => d.saldo);
+  const ticks = niceTicks(Math.min(0, ...vals), Math.max(0, ...vals, 1));
+  const lo = ticks[0], hiV = ticks[ticks.length - 1];
+  const y = (v) => m.t + ih - ((v - lo) / (hiV - lo)) * ih;
+  const band = iw / Math.max(1, data.length);
+  const px = (i) => m.l + (i + 0.5) * band;
+  const every = xLabelEvery(band, 38);
+  const line = data.map((d, i) => `${i ? 'L' : 'M'}${px(i)} ${y(d.saldo)}`).join('');
+  const area = data.length > 1 ? `${line}L${px(data.length - 1)} ${y(0)}L${px(0)} ${y(0)}Z` : '';
+  const last = data.length - 1;
+  const h = hi != null ? data[hi] : null;
+  return html`<div ref=${ref} className="relative" style=${{ height: H + 'px' }} onMouseLeave=${() => setHi(null)}>
+    ${w > 0 ? html`<svg width=${w} height=${H} role="img" aria-label="Evolução do saldo acumulado">
+      <defs>
+        <linearGradient id="balfill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#a5b4fc" stopOpacity="0.32" />
+          <stop offset="100%" stopColor="#a5b4fc" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      ${ticks.map((t) => html`<g key=${t}>
+        <line x1=${m.l} x2=${w - m.r} y1=${y(t)} y2=${y(t)} stroke="var(--line)" strokeOpacity=${t === 0 ? 1 : 0.55} strokeDasharray=${t === 0 ? '' : '3 4'} />
+        <text className="axis-text" x=${m.l - 8} y=${y(t) + 4} textAnchor="end">${fmtAxis(t)}</text>
+      </g>`)}
+      ${area ? html`<path d=${area} fill="url(#balfill)" />` : null}
+      <path d=${line} fill="none" stroke="var(--bal)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+      ${data.map((d, i) => i % every === 0 ? html`<text key=${d.key} className="axis-text" x=${px(i)} y=${H - 9} textAnchor="middle">${d.label}</text>` : null)}
+      ${hi != null ? html`<g>
+        <line x1=${px(hi)} x2=${px(hi)} y1=${m.t} y2=${m.t + ih} stroke="var(--ink-3)" strokeOpacity="0.6" strokeDasharray="2 3" />
+        <circle cx=${px(hi)} cy=${y(data[hi].saldo)} r="5" fill="var(--bal)" stroke="var(--surface)" strokeWidth="2" />
+      </g>` : null}
+      ${last >= 0 && hi == null ? html`<g>
+        <circle cx=${px(last)} cy=${y(data[last].saldo)} r="5.5" fill="var(--bal)" stroke="var(--surface)" strokeWidth="2.5" />
+        <text x=${px(last)} y=${y(data[last].saldo) - 12} textAnchor="end" fill="var(--ink)" fontSize="12.5" fontWeight="600" style=${{ fontFamily: 'var(--font-body)' }}>${brl.format(data[last].saldo)}</text>
+      </g>` : null}
+      ${data.map((d, i) => html`<rect key=${'h' + d.key} x=${m.l + i * band} y=${m.t} width=${band} height=${ih} fill="transparent" onMouseEnter=${() => setHi(i)} onMouseMove=${() => setHi(i)} onTouchStart=${() => setHi(i)} />`)}
+    </svg>` : null}
+    ${h ? html`<${Tooltip} x=${px(hi)} w=${w} title=${h.title} rows=${[
+      { label: 'Saldo acumulado', value: brl.format(h.saldo), color: 'var(--bal)' },
+      { label: 'Resultado do período', value: brl.format(h.net) },
+    ]} />` : null}
+  </div>`;
+}
+
+function polar(cx, cy, r, a) { return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+function arcPath(cx, cy, ro, ri, a0, a1) {
+  const large = a1 - a0 > Math.PI ? 1 : 0;
+  const [x0, y0] = polar(cx, cy, ro, a0), [x1, y1] = polar(cx, cy, ro, a1);
+  const [x2, y2] = polar(cx, cy, ri, a1), [x3, y3] = polar(cx, cy, ri, a0);
+  return `M${x0} ${y0}A${ro} ${ro} 0 ${large} 1 ${x1} ${y1}L${x2} ${y2}A${ri} ${ri} 0 ${large} 0 ${x3} ${y3}Z`;
+}
+
+function Donut({ slices, total }) {
+  const [active, setActive] = useState(null);
+  const S = 210, c = S / 2, ro = 98, ri = 66;
+  let a = -Math.PI / 2;
+  const arcs = slices.map((s) => {
+    const sweep = (s.value / total) * Math.PI * 2;
+    const arc = { ...s, a0: a, a1: a + sweep };
+    a += sweep;
+    return arc;
+  });
+  const cur = active != null ? slices[active] : null;
+  return html`<div className="flex flex-wrap items-center gap-5">
+    <div className="relative mx-auto" style=${{ width: S + 'px', height: S + 'px', flex: 'none' }}>
+      <svg width=${S} height=${S} role="img" aria-label="Distribuição das despesas por categoria" onMouseLeave=${() => setActive(null)}>
+        ${arcs.length === 1
+          ? html`<circle cx=${c} cy=${c} r=${(ro + ri) / 2} fill="none" stroke=${arcs[0].color} strokeWidth=${ro - ri} />`
+          : arcs.map((s, i) => html`<path key=${s.name} d=${arcPath(c, c, ro, ri, s.a0, s.a1)} fill=${s.color} stroke="var(--surface)" strokeWidth="2.5" strokeLinejoin="round"
+              opacity=${active == null || active === i ? 1 : 0.38} tabIndex="0"
+              aria-label=${s.name + ': ' + brl.format(s.value) + ', ' + fmtPct((s.value / total) * 100)}
+              onMouseEnter=${() => setActive(i)} onFocus=${() => setActive(i)} onBlur=${() => setActive(null)} />`)}
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none" style=${{ padding: '0 38px' }}>
+        <div className="eyebrow" style=${{ fontSize: '11px' }}>${cur ? cur.name : 'Despesas'}</div>
+        <div className="display num" style=${{ fontSize: '20px', fontWeight: 700, lineHeight: 1.2 }}>${brl.format(cur ? cur.value : total)}</div>
+        ${cur ? html`<div className="card-sub num">${fmtPct((cur.value / total) * 100)}</div>` : null}
+      </div>
+    </div>
+    <ul className="donut-legend">
+      ${slices.map((s, i) => html`<li key=${s.name} className=${active === i ? 'on' : ''} onMouseEnter=${() => setActive(i)} onMouseLeave=${() => setActive(null)}>
+        <i className="dot" style=${{ background: s.color }}></i>
+        <span className="nm" title=${s.name}>${s.name}</span>
+        <span className="pc num">${fmtPct((s.value / total) * 100)}</span>
+        <span className="vl num">${brl.format(s.value)}</span>
+      </li>`)}
+    </ul>
+  </div>`;
+}
+
+function Kpi({ color, label, value, children }) {
+  return html`<div className="card">
+    <div className="kpi-label"><i className="dot" style=${{ background: color }}></i>${label}</div>
+    <div className="kpi-value num">${value}</div>
+    ${children}
+  </div>`;
+}
+
+function App() {
+  const stored = useMemo(() => {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) { const p = JSON.parse(raw); if (p && Array.isArray(p.txs) && p.txs.length) return p; }
+    } catch (e) { /* armazenamento indisponível */ }
+    return null;
+  }, []);
+  const sample = useMemo(buildSample, []);
+  const [txs, setTxs] = useState(stored ? stored.txs : sample);
+  const [source, setSource] = useState(stored ? stored.name : null);
+  const [notice, setNotice] = useState(null);
+  const [year, setYear] = useState('all');
+  const [month, setMonth] = useState('all');
+  const [type, setType] = useState('all');
+  const [query, setQuery] = useState('');
+  const [sortKey, setSortKey] = useState('date');
+  const [sortDir, setSortDir] = useState('desc');
+  const [page, setPage] = useState(1);
+  const fileRef = useRef(null);
+
+  const years = useMemo(() => [...new Set(txs.map((t) => t.date.slice(0, 4)))].sort().reverse(), [txs]);
+  const catColor = useMemo(() => {
+    const totals = {};
+    txs.forEach((t) => { if (t.type === 'Despesa') totals[t.cat] = (totals[t.cat] || 0) + t.value; });
+    const map = {};
+    Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, CAT_COLORS.length).forEach(([k], i) => { map[k] = CAT_COLORS[i]; });
+    return map;
+  }, [txs]);
+
+  const period = useMemo(() => txs.filter((t) =>
+    (year === 'all' || t.date.slice(0, 4) === year) && (month === 'all' || +t.date.slice(5, 7) === +month)), [txs, year, month]);
+
+  const kpi = useMemo(() => {
+    let receita = 0, despesa = 0, invest = 0, nR = 0, nD = 0;
+    period.forEach((t) => {
+      if (t.type === 'Receita') { receita += t.value; nR++; }
+      else if (t.type === 'Despesa') { despesa += t.value; nD++; }
+      else invest += t.value;
+    });
+    return { receita, despesa, invest, nR, nD, saldo: receita - despesa, taxa: receita > 0 ? (invest / receita) * 100 : 0 };
+  }, [period]);
+
+  const daily = year !== 'all' && month !== 'all';
+  const buckets = useMemo(() => buildBuckets(period, daily, month !== 'all'), [period, daily, month]);
+
+  const slices = useMemo(() => {
+    const totals = {};
+    period.forEach((t) => { if (t.type === 'Despesa') totals[t.cat] = (totals[t.cat] || 0) + t.value; });
+    const list = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+    const main = [], other = { name: 'Outras', value: 0, color: OTHER_COLOR };
+    list.forEach(([name, value]) => {
+      if (catColor[name]) main.push({ name, value, color: catColor[name] });
+      else other.value += value;
+    });
+    if (other.value > 0) main.push(other);
+    return main;
+  }, [period, catColor]);
+
+  const rows = useMemo(() => {
+    const q = norm(query);
+    const list = period.filter((t) => (type === 'all' || t.type === type) && (!q || norm(t.desc).includes(q) || norm(t.cat).includes(q)));
+    const dir = sortDir === 'asc' ? 1 : -1;
+    list.sort((a, b) => {
+      let r;
+      if (sortKey === 'value') r = a.value - b.value;
+      else if (sortKey === 'date') r = a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id;
+      else r = String(a[sortKey]).localeCompare(String(b[sortKey]), 'pt-BR');
+      return r * dir;
+    });
+    return list;
+  }, [period, type, query, sortKey, sortDir]);
+
+  useEffect(() => { setPage(1); }, [year, month, type, query, sortKey, sortDir, txs]);
+  const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const rowTotals = useMemo(() => {
+    const t = { Receita: 0, Despesa: 0, Investimento: 0 };
+    rows.forEach((r) => { t[r.type] += r.value; });
+    return t;
+  }, [rows]);
+
+  const range = useMemo(() => {
+    if (!txs.length) return '';
+    const ds = txs.map((t) => t.date).sort();
+    const f = (iso) => MESES_CURTOS[+iso.slice(5, 7) - 1] + '/' + iso.slice(0, 4);
+    return f(ds[0]) + ' a ' + f(ds[ds.length - 1]);
+  }, [txs]);
+  const periodLabel = month !== 'all' || year !== 'all'
+    ? [month !== 'all' ? MESES[+month - 1] : 'Todos os meses', year !== 'all' ? year : 'todos os anos'].join(' de ')
+    : 'Todo o período';
+
+  const filtersActive = year !== 'all' || month !== 'all' || type !== 'all' || query !== '';
+  const clearFilters = () => { setYear('all'); setMonth('all'); setType('all'); setQuery(''); };
+
+  const onSort = (key) => {
+    if (sortKey === key) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir(key === 'value' || key === 'date' ? 'desc' : 'asc'); }
+  };
+  const sortMark = (key) => sortKey === key ? (sortDir === 'asc' ? '▲' : '▼') : '';
+  const ariaSort = (key) => sortKey === key ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none';
+
+  const onFile = async (e) => {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    try {
+      const { txs: t, skipped } = await readFile(f);
+      setTxs(t); setSource(f.name); clearFilters();
+      setNotice({ kind: 'ok', text: `${t.length} lançamentos importados de ${f.name}` + (skipped ? `. ${skipped} linhas foram ignoradas por data ou valor inválido.` : '.') });
+      try { localStorage.setItem(STORE_KEY, JSON.stringify({ name: f.name, txs: t })); } catch (err) { /* sem armazenamento */ }
+    } catch (err) {
+      setNotice({ kind: 'err', text: err.message || 'Não foi possível importar a planilha.' });
+    }
+  };
+  const resetSample = () => {
+    setTxs(sample); setSource(null); clearFilters();
+    setNotice({ kind: 'ok', text: 'Dados de exemplo restaurados.' });
+    try { localStorage.removeItem(STORE_KEY); } catch (err) { /* sem armazenamento */ }
+  };
+
+  const dailyNote = daily ? 'por dia' : 'por mês';
+  const share = kpi.receita > 0 ? (kpi.despesa / kpi.receita) * 100 : 0;
+
+  return html`<div className="wrap">
+    <header className="flex flex-wrap items-end justify-between gap-4">
+      <div style=${{ minWidth: 0 }}>
+        <div className="eyebrow">${source ? 'Planilha: ' + source : 'Dados de exemplo'} · ${range}</div>
+        <h1 className="display" style=${{ fontSize: 'clamp(28px, 4.4vw, 40px)', fontWeight: 700, lineHeight: 1.1, marginTop: '6px', overflowWrap: 'anywhere' }}>Painel financeiro pessoal</h1>
+        <p className="card-sub" style=${{ marginTop: '6px' }}>Exibindo: <b style=${{ color: 'var(--ink-2)', fontWeight: 600 }}>${periodLabel}</b></p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        ${source ? html`<button className="btn btn-quiet" onClick=${resetSample}>Voltar ao exemplo</button>` : null}
+        <button className="btn btn-primary" onClick=${() => fileRef.current && fileRef.current.click()}>Importar planilha</button>
+        <input ref=${fileRef} id="file-input" type="file" accept=".xlsx,.xls,.csv,.txt" className="sr-only" onChange=${onFile} tabIndex="-1" aria-label="Importar planilha" />
+      </div>
+    </header>
+
+    <div className="mt-5 flex flex-col gap-3">
+      ${!source ? html`<div className="banner warn">
+        <span><b>Você está vendo dados de exemplo.</b> Importe um arquivo .xlsx ou .csv com as colunas <b>Data, Descrição, Categoria, Tipo</b> (Receita, Despesa ou Investimento) e <b>Valor</b> para ver os seus números.</span>
+      </div>` : null}
+      ${notice ? html`<div className=${'banner ' + notice.kind} role="status">
+        <span>${notice.text}</span>
+        <button className="btn btn-quiet" style=${{ minHeight: '32px', padding: '4px 10px' }} onClick=${() => setNotice(null)}>Fechar</button>
+      </div>` : null}
+    </div>
+
+    <section className="card mt-5" aria-label="Filtro de período">
+      <div className="grid gap-3 grid-cols-1 min-[560px]:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] items-end">
+        <div className="field">
+          <label htmlFor="f-year">Ano</label>
+          <select id="f-year" className="input" value=${year} onChange=${(e) => setYear(e.target.value)}>
+            <option value="all">Todos os anos</option>
+            ${years.map((y) => html`<option key=${y} value=${y}>${y}</option>`)}
+          </select>
+        </div>
+        <div className="field">
+          <label htmlFor="f-month">Mês</label>
+          <select id="f-month" className="input" value=${month} onChange=${(e) => setMonth(e.target.value)}>
+            <option value="all">Todos os meses</option>
+            ${MESES.map((n, i) => html`<option key=${n} value=${i + 1}>${n}</option>`)}
+          </select>
+        </div>
+        <button className="btn btn-quiet" onClick=${clearFilters} disabled=${!filtersActive}>Limpar filtros</button>
+      </div>
+      <p className="card-sub" style=${{ marginTop: '10px' }}>O período vale para os indicadores, os gráficos e a tabela. Tipo e busca valem para a tabela.</p>
+    </section>
+
+    <section className="mt-5 grid gap-4 grid-cols-1 min-[520px]:grid-cols-2 lg:grid-cols-4" aria-label="Indicadores">
+      <${Kpi} color="var(--rev)" label="Receita total" value=${brl.format(kpi.receita)}>
+        <div className="kpi-note">${kpi.nR} ${kpi.nR === 1 ? 'entrada' : 'entradas'} no período</div>
+      <//>
+      <${Kpi} color="var(--exp)" label="Despesa total" value=${brl.format(kpi.despesa)}>
+        <div className="kpi-note">${fmtPct(share)} da receita · ${kpi.nD} ${kpi.nD === 1 ? 'saída' : 'saídas'}</div>
+      <//>
+      <${Kpi} color="var(--bal)" label="Saldo atual" value=${brl.format(kpi.saldo)}>
+        <div className="kpi-note"><span className=${'pill ' + (kpi.saldo >= 0 ? 'pill-rev' : 'pill-exp')}>${kpi.saldo >= 0 ? '▲ Superávit' : '▼ Déficit'}</span> receitas − despesas</div>
+      <//>
+      <${Kpi} color="var(--inv)" label="Taxa de poupança" value=${fmtPct(kpi.taxa)}>
+        <div className="bar-track" role="img" aria-label=${'Taxa de poupança ' + fmtPct(kpi.taxa)}><div className="bar-fill" style=${{ width: Math.min(100, kpi.taxa) + '%' }}></div></div>
+        <div className="kpi-note">${brl.format(kpi.invest)} investidos</div>
+      <//>
+    </section>
+
+    ${period.length === 0 ? html`<div className="card mt-5 empty">Nenhum lançamento neste período. <button className="btn btn-quiet" style=${{ marginLeft: '8px' }} onClick=${clearFilters}>Limpar filtros</button></div>` : html`
+    <section className="mt-5 grid gap-4 grid-cols-1 lg:grid-cols-12">
+      <div className="card lg:col-span-5">
+        <div className="card-title">Despesas por categoria</div>
+        <div className="card-sub" style=${{ marginBottom: '14px' }}>Passe o mouse em uma fatia para ver o valor</div>
+        ${slices.length ? html`<${Donut} slices=${slices} total=${kpi.despesa} />` : html`<div className="empty">Sem despesas neste período.</div>`}
+      </div>
+      <div className="card lg:col-span-7">
+        <div className="flex flex-wrap items-start justify-between gap-2" style=${{ marginBottom: '8px' }}>
+          <div>
+            <div className="card-title">Receitas x despesas</div>
+            <div className="card-sub">Totais ${dailyNote}</div>
+          </div>
+          <div className="legend">
+            <span><i className="dot" style=${{ background: 'var(--rev)' }}></i>Receitas</span>
+            <span><i className="dot" style=${{ background: 'var(--exp)' }}></i>Despesas</span>
+          </div>
+        </div>
+        <${BarChart} data=${buckets} />
+      </div>
+      <div className="card lg:col-span-12">
+        <div className="flex flex-wrap items-start justify-between gap-2" style=${{ marginBottom: '8px' }}>
+          <div>
+            <div className="card-title">Evolução do saldo acumulado</div>
+            <div className="card-sub">Soma de receitas − despesas ${dailyNote}, desde o início do período</div>
+          </div>
+          <div className="legend"><span><i className="dot" style=${{ background: 'var(--bal)' }}></i>Saldo acumulado</span></div>
+        </div>
+        <${LineChart} data=${buckets} />
+      </div>
+    </section>`}
+
+    <section className="card mt-5" aria-label="Lançamentos">
+      <div className="flex flex-wrap items-end justify-between gap-3" style=${{ marginBottom: '14px' }}>
+        <div>
+          <div className="card-title">Lançamentos</div>
+          <div className="card-sub num">${rows.length} ${rows.length === 1 ? 'resultado' : 'resultados'}</div>
+        </div>
+        <div className="flex flex-wrap items-end gap-3" style=${{ minWidth: 0 }}>
+          <div className="seg" role="group" aria-label="Filtrar por tipo">
+            ${['all', ...TIPOS].map((t) => html`<button key=${t} aria-pressed=${type === t} onClick=${() => setType(t)}>
+              ${t === 'all' ? 'Todos' : html`<i className="dot" style=${{ background: TYPE_COLOR[t] }}></i>${t}`}
+            </button>`)}
+          </div>
+          <div className="field" style=${{ width: 'min(100%, 260px)' }}>
+            <label htmlFor="f-query" className="sr-only">Buscar na descrição</label>
+            <input id="f-query" type="search" className="input" placeholder="Buscar na descrição" value=${query} onChange=${(e) => setQuery(e.target.value)} />
+          </div>
+        </div>
+      </div>
+
+      ${rows.length === 0 ? html`<div className="empty">Nenhum lançamento encontrado com esses filtros.<br /><button className="btn btn-quiet" style=${{ marginTop: '10px' }} onClick=${clearFilters}>Limpar filtros</button></div>` : html`
+      <div className="table-wrap">
+        <table className="tx">
+          <thead><tr>
+            <th aria-sort=${ariaSort('date')}><button onClick=${() => onSort('date')}>Data ${sortMark('date')}</button></th>
+            <th aria-sort=${ariaSort('desc')}><button onClick=${() => onSort('desc')}>Descrição ${sortMark('desc')}</button></th>
+            <th aria-sort=${ariaSort('cat')}><button onClick=${() => onSort('cat')}>Categoria ${sortMark('cat')}</button></th>
+            <th aria-sort=${ariaSort('type')}><button onClick=${() => onSort('type')}>Tipo ${sortMark('type')}</button></th>
+            <th className="r" aria-sort=${ariaSort('value')}><button onClick=${() => onSort('value')}>Valor ${sortMark('value')}</button></th>
+          </tr></thead>
+          <tbody>
+            ${pageRows.map((t) => html`<tr key=${t.id}>
+              <td className="num" style=${{ whiteSpace: 'nowrap', color: 'var(--ink-2)' }}>${fmtDate(t.date)}</td>
+              <td style=${{ minWidth: '160px' }}>${t.desc}</td>
+              <td style=${{ color: 'var(--ink-2)' }}>${t.cat}</td>
+              <td><span className=${'pill ' + TYPE_PILL[t.type]}>${TYPE_GLYPH[t.type]} ${t.type}</span></td>
+              <td className="r num" style=${{ whiteSpace: 'nowrap', fontWeight: 600 }}>${t.type === 'Receita' ? '+ ' : t.type === 'Despesa' ? '− ' : ''}${brl.format(t.value)}</td>
+            </tr>`)}
+          </tbody>
+        </table>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-3" style=${{ marginTop: '14px' }}>
+        <div className="card-sub num">
+          Receitas ${brl.format(rowTotals.Receita)} · Despesas ${brl.format(rowTotals.Despesa)} · Investimentos ${brl.format(rowTotals.Investimento)}
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="btn" onClick=${() => setPage(page - 1)} disabled=${page <= 1}>Anterior</button>
+          <span className="card-sub num">Página ${page} de ${pages}</span>
+          <button className="btn" onClick=${() => setPage(page + 1)} disabled=${page >= pages}>Próxima</button>
+        </div>
+      </div>`}
+    </section>
+
+    <footer className="card-sub" style=${{ marginTop: '20px' }}>
+      Saldo = receitas − despesas. Taxa de poupança = investimentos ÷ receitas. Os dados importados ficam apenas neste navegador.
+    </footer>
+  </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
+</script>

@@ -129,6 +129,8 @@ const CAT_COLORS = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#908
 const OTHER_COLOR = '#6b7894';
 const STORE_KEY = 'painel-financeiro-v1';
 const PAGE_SIZE = 12;
+/* Base embutida opcional: { name, txs }. No repositório fica vazia; a cópia publicada pode trazer dados reais. */
+const EMBEDDED = null;
 
 const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 const pad = (n) => String(n).padStart(2, '0');
@@ -565,8 +567,10 @@ function App() {
     return null;
   }, []);
   const sample = useMemo(buildSample, []);
-  const [txs, setTxs] = useState(stored ? stored.txs : sample);
-  const [source, setSource] = useState(stored ? stored.name : null);
+  const base = EMBEDDED ? EMBEDDED.txs : sample;
+  const baseName = EMBEDDED ? EMBEDDED.name : null;
+  const [txs, setTxs] = useState(stored ? stored.txs : base);
+  const [source, setSource] = useState(stored ? stored.name : baseName);
   const [notice, setNotice] = useState(null);
   const [year, setYear] = useState('all');
   const [month, setMonth] = useState('all');
@@ -593,7 +597,7 @@ function App() {
     let receita = 0, despesa = 0, invest = 0, nR = 0, nD = 0;
     period.forEach((t) => {
       if (t.type === 'Receita') { receita += t.value; nR++; }
-      else if (t.type === 'Despesa') { despesa += t.value; nD++; }
+      else if (t.type === 'Despesa') { despesa += t.value; if (t.value > 0) nD++; }
       else invest += t.value;
     });
     return { receita, despesa, invest, nR, nD, saldo: receita - despesa, taxa: receita > 0 ? (invest / receita) * 100 : 0 };
@@ -608,6 +612,7 @@ function App() {
     const list = Object.entries(totals).sort((a, b) => b[1] - a[1]);
     const main = [], other = { name: 'Outras', value: 0, color: OTHER_COLOR };
     list.forEach(([name, value]) => {
+      if (value <= 0) return;
       if (catColor[name]) main.push({ name, value, color: catColor[name] });
       else other.value += value;
     });
@@ -672,8 +677,8 @@ function App() {
     }
   };
   const resetSample = () => {
-    setTxs(sample); setSource(null); clearFilters();
-    setNotice({ kind: 'ok', text: 'Dados de exemplo restaurados.' });
+    setTxs(base); setSource(baseName); clearFilters();
+    setNotice({ kind: 'ok', text: EMBEDDED ? 'Dados originais restaurados.' : 'Dados de exemplo restaurados.' });
     try { localStorage.removeItem(STORE_KEY); } catch (err) { /* sem armazenamento */ }
   };
 
@@ -683,12 +688,12 @@ function App() {
   return html`<div className="wrap">
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div style=${{ minWidth: 0 }}>
-        <div className="eyebrow">${source ? 'Planilha: ' + source : 'Dados de exemplo'} · ${range}</div>
+        <div className="eyebrow">${source ? (EMBEDDED && source === baseName ? source : 'Planilha: ' + source) : 'Dados de exemplo'} · ${range}</div>
         <h1 className="display" style=${{ fontSize: 'clamp(28px, 4.4vw, 40px)', fontWeight: 700, lineHeight: 1.1, marginTop: '6px', overflowWrap: 'anywhere' }}>Painel financeiro pessoal</h1>
         <p className="card-sub" style=${{ marginTop: '6px' }}>Exibindo: <b style=${{ color: 'var(--ink-2)', fontWeight: 600 }}>${periodLabel}</b></p>
       </div>
       <div className="flex flex-wrap gap-2">
-        ${source ? html`<button className="btn btn-quiet" onClick=${resetSample}>Voltar ao exemplo</button>` : null}
+        ${source && source !== baseName ? html`<button className="btn btn-quiet" onClick=${resetSample}>${EMBEDDED ? 'Voltar aos dados originais' : 'Voltar ao exemplo'}</button>` : null}
         <button className="btn btn-primary" onClick=${() => fileRef.current && fileRef.current.click()}>Importar planilha</button>
         <input ref=${fileRef} id="file-input" type="file" accept=".xlsx,.xls,.csv,.txt" className="sr-only" onChange=${onFile} tabIndex="-1" aria-label="Importar planilha" />
       </div>
@@ -746,7 +751,7 @@ function App() {
       <div className="card lg:col-span-5">
         <div className="card-title">Despesas por categoria</div>
         <div className="card-sub" style=${{ marginBottom: '14px' }}>Passe o mouse em uma fatia para ver o valor</div>
-        ${slices.length ? html`<${Donut} slices=${slices} total=${kpi.despesa} />` : html`<div className="empty">Sem despesas neste período.</div>`}
+        ${slices.length ? html`<${Donut} slices=${slices} total=${slices.reduce((s, x) => s + x.value, 0)} />` : html`<div className="empty">Sem despesas neste período.</div>`}
       </div>
       <div className="card lg:col-span-7">
         <div className="flex flex-wrap items-start justify-between gap-2" style=${{ marginBottom: '8px' }}>
@@ -808,7 +813,7 @@ function App() {
               <td style=${{ minWidth: '160px' }}>${t.desc}</td>
               <td style=${{ color: 'var(--ink-2)' }}>${t.cat}</td>
               <td><span className=${'pill ' + TYPE_PILL[t.type]}>${TYPE_GLYPH[t.type]} ${t.type}</span></td>
-              <td className="r num" style=${{ whiteSpace: 'nowrap', fontWeight: 600 }}>${t.type === 'Receita' ? '+ ' : t.type === 'Despesa' ? '− ' : ''}${brl.format(t.value)}</td>
+              <td className="r num" style=${{ whiteSpace: 'nowrap', fontWeight: 600 }}>${t.type === 'Receita' || (t.type === 'Despesa' && t.value < 0) ? '+ ' : t.type === 'Despesa' ? '− ' : ''}${brl.format(Math.abs(t.value))}</td>
             </tr>`)}
           </tbody>
         </table>
